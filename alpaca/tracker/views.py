@@ -82,7 +82,7 @@ def report(api_key):
             cookies=request.json['cookies'],
             headers=request.json['headers']
         )
-    except KeyError:
+    except (KeyError, iso8601.ParseError):
         flask.abort(400)
     try:
         Error.objects.get(checksum=checksum)
