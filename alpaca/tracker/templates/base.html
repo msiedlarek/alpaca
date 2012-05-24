@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% block head_meta -%}
+            <meta charset="utf-8">
+        {%- endblock %}
+        {% block body_stylesheets -%}
+            <link href="{{ url_for('tracker.static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+            <link href="{{ url_for('tracker.static', filename='alpaca/css/base.css') }}" rel="stylesheet">
+        {%- endblock %}
+        <title>{% block head_title -%}Alpaca{%- endblock %}</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="navbar navbar-fixed-top">
+                <div class="navbar-inner">
+                    <div class="container">
+                        <a href="{{ url_for('tracker.dashboard') }}" class="brand">Alpaca</a>
+                        {% block body_navbar_content %}
+                            {% if current_user.is_authenticated() %}
+                                <div class="nav-collapse">
+                                    <ul class="nav pull-right">
+                                        <li>
+                                            <form action="{{ url_for('tracker.logout') }}" method="post" style="display: inline;">
+                                                {{ logout_form.csrf_token }}
+                                                <button class="btn btn-mini btn-danger"><i class="icon-white icon-off"></i> Logout</a></button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+            {% if current_user.is_authenticated() -%}
+                <div class="subnav">
+                    <ul class="nav nav-tabs">
+                        <li {% if active_reporter == 'all' %}class="active"{% endif %}><a href="{{ url_for('tracker.dashboard') }}" >all</a></li>
+                        {% for reporter in reporters %}
+                            <li {% if active_reporter == reporter %}class="active"{% endif %}><a href="{{ url_for('tracker.reporter', reporter=reporter) }}">{{ reporter }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {%- endif %}
+            <div class="container">
+                {% for category, message in get_flashed_messages(with_categories=True) -%}
+                    <div class="alert alert-{{ category }}">
+                        <a class="close" data-dismiss="alert">×</a>
+                        {{ message|safe }}
+                    </div>
+                {%- endfor %}
+                {% block body_content %}{% endblock %}
+            </div>
+        </div>
+        {% block body_scripts %}
+            <script src="{{ url_for('tracker.static', filename='jquery/js/jquery-1.7.2.min.js') }}"></script>
+            <script src="{{ url_for('tracker.static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+        {% endblock %}
+    </body>
+</html>

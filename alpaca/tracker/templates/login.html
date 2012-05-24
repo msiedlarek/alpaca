@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from "macros/forms.html" import render_horizontal_form_field %}
+
+{% block body_content %}
+    <h2>Login</h2>
+    <form action="" method="post" class="well form-horizontal">
+        {{ login_form.csrf_token }}
+        {{ render_horizontal_form_field(login_form.username) }}
+        {{ render_horizontal_form_field(login_form.password) }}
+        <div class="form-actions" style="padding-bottom: 0; margin-bottom: 0;">
+            <input type="submit" value="Login" class="btn btn-primary">
+        </div>
+    </form>
+{% endblock %}

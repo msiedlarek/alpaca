@@ -1,0 +1,14 @@
+from alpaca.configuration.base import *
+
+DEBUG = False
+
+SECRET_KEY = ''
+
+MONGODB_CONNECTIONS = {
+    'default': {
+        'name': 'alpaca',
+        'host': 'localhost',
+        'username': None,
+        'password': None,
+    },
+}

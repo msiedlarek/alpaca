@@ -1,0 +1,36 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Summary</th>
+            <th>Last occurence</th>
+            <th>Occurences</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for error in errors %}
+            <tr>
+                <td><code>{{ error.summary|truncate(75, true) }}</code></td>
+                <td>{{ error.last_occurence }}</td>
+                <td>
+                    <span class="badge {% if error.occurence_counter >= 10 -%}
+                        badge-important
+                    {%- elif error.occurence_counter > 1 -%}
+                        badge-warning
+                    {%- endif %}">{{ error.occurence_counter }}</span>
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <a href="{{ url_for('tracker.investigate',
+                        error_id=error.id) }}" class="btn btn-mini"><i
+                        class="icon icon-search"></i> Investigate</a>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4" style="text-align: center;">No bugs for you.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

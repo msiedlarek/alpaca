@@ -1,0 +1,4 @@
+*.py[co]
+alpaca/configuration/local.py
+environment
+mongodb

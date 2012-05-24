@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block body_content %}
+    <h1>{{ error.summary }}</h1>
+    <table style="margin-top: 20px;" class="table table-bordered">
+        <tbody>
+            <tr><th>ID:</th><td><code>{{ error.id }}</code></td></tr>
+            <tr><th>Reporters:</th><td>
+                {%- for reporter in error.reporters -%}
+                    <a href="{{ url_for('tracker.reporter', reporter=reporter) }}">{{ reporter }}</a>
+                {%- endfor -%}
+            </td></tr>
+            <tr><th>Last occurence:</th><td>{{ error.last_occurence }}</td></tr>
+            <tr><th>Occurences total:</th><td>{{ error.occurence_counter }}</td></tr>
+        </tbody>
+    </table>
+    <h2>Traceback</h2>
+    <pre style="margin-top: 10px;">{{ error.traceback }}</pre>
+    <h2>Last occurence</h2>
+    {% with occurence=error.occurences|last %}
+        <table style="margin-top: 10px;" class="table table-bordered">
+            <tbody>
+                <tr><th>Path:</th><td><code>{{ occurence.path }}</code></td></tr>
+                <tr><th>Date:</th><td>{{ occurence.date }}</td></tr>
+                <tr><th>Reporter:</th><td><a href="{{ url_for('tracker.reporter', reporter=occurence.reporter) }}">{{ occurence.reporter }}</a></td></tr>
+            </tbody>
+        </table>
+        <h3>GET data</h3>
+        <pre style="margin-top: 10px;">
+            {%- for name, value in occurence.get_data|dictsort -%}
+                {{ name }} = {{ value }}<br>
+            {%- else -%}
+                No GET data.
+            {%- endfor -%}
+        </pre>
+        <h3>POST data</h3>
+        <pre style="margin-top: 10px;">
+            {%- for name, value in occurence.post_data|dictsort -%}
+                {{ name }} = {{ value }}<br>
+            {%- else -%}
+                No POST data.
+            {%- endfor -%}
+        </pre>
+        <h3>Cookies</h3>
+        <pre style="margin-top: 10px;">
+            {%- for name, value in occurence.cookies|dictsort -%}
+                {{ name }} = {{ value }}<br>
+            {%- else -%}
+                No cookies.
+            {%- endfor -%}
+        </pre>
+        <h3>Headers</h3>
+        <pre style="margin-top: 10px;">
+            {%- for name, value in occurence.headers|dictsort -%}
+                {{ name }} = {{ value }}<br>
+            {%- else -%}
+                No headers.
+            {%- endfor -%}
+        </pre>
+    {% endwith %}
+{% endblock %}
