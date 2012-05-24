@@ -40,7 +40,7 @@ def alpaca_report(exception, request=None):
         message = dict(
             traceback=traceback.format_exc(exception).strip(),
             date=datetime.datetime.now().isoformat(),
-            path=None,
+            uri=None,
             get_data=None,
             post_data=None,
             cookies=None,
@@ -54,7 +54,7 @@ def alpaca_report(exception, request=None):
                 except ValueError:
                     continue
             message.update(dict(
-                path=request.path,
+                uri=request.build_absolute_uri(),
                 get_data=request.GET.dict(),
                 post_data=request.POST.dict(),
                 cookies=request.COOKIES,

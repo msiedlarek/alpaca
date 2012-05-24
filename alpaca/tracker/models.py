@@ -23,7 +23,7 @@ class User(db.Document, UserMixin):
 class ErrorOccurence(db.EmbeddedDocument):
     date = db.DateTimeField(required=True)
     reporter = db.StringField(required=True)
-    path = db.StringField(max_length=2000)
+    uri = db.StringField(max_length=2000)
     get_data = db.DictField()
     post_data = db.DictField()
     cookies = db.DictField()

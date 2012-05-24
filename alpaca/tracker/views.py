@@ -76,7 +76,7 @@ def report(api_key):
         occurence = ErrorOccurence(
             date=iso8601.parse_date(request.json['date']),
             reporter=reporter,
-            path=request.json['path'],
+            uri=request.json['uri'],
             get_data=request.json['get_data'],
             post_data=request.json['post_data'],
             cookies=request.json['cookies'],

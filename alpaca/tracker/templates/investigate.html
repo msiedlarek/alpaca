@@ -20,9 +20,9 @@
     {% with occurence=error.occurences|last %}
         <table style="margin-top: 10px;" class="table table-bordered">
             <tbody>
-                <tr><th>Path:</th><td>
-                    {%- if occurence.path -%}
-                        <code>{{ occurence.path }}</code>
+                <tr><th>URI:</th><td>
+                    {%- if occurence.uri -%}
+                        <a href="{{ occurence.uri }}">{{ occurence.uri }}</a>
                     {%- else -%}
                         <span style="color: #aaa;">(not a request)</span>
                     {%- endif -%}
@@ -31,7 +31,7 @@
                 <tr><th>Reporter:</th><td><a href="{{ url_for('tracker.reporter', reporter=occurence.reporter) }}">{{ occurence.reporter }}</a></td></tr>
             </tbody>
         </table>
-        {% if occurence.path %}
+        {% if occurence.uri %}
             <h3>GET data</h3>
             <pre style="margin-top: 10px;">
                 {%- for name, value in occurence.get_data|dictsort -%}
