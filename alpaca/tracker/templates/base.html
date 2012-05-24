@@ -20,10 +20,15 @@
                             {% if current_user.is_authenticated() %}
                                 <div class="nav-collapse">
                                     <ul class="nav pull-right">
+                                        {% if current_user.is_authenticated() -%}
+                                            <li><div class="btn-group">
+                                                <a href="{{ url_for('tracker.change_password') }}" class="btn btn-mini btn-inverse"><i class="icon-white icon-wrench"></i> Change password</a>
+                                            </div></li>
+                                        {%- endif %}
                                         <li>
                                             <form action="{{ url_for('tracker.logout') }}" method="post" style="display: inline;">
                                                 {{ logout_form.csrf_token }}
-                                                <button class="btn btn-mini btn-danger"><i class="icon-white icon-off"></i> Logout</a></button>
+                                                <button class="btn btn-mini btn-danger"><i class="icon-white icon-off"></i> Logout</button>
                                             </form>
                                         </li>
                                     </ul>

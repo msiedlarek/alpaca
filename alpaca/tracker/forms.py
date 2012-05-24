@@ -12,3 +12,20 @@ class LoginForm(wtf.Form):
 
 class LogoutForm(wtf.Form):
     pass
+
+class ChangePasswordForm(wtf.Form):
+    password = wtf.PasswordField(
+        "New password",
+        validators=(
+            wtf.Required(),
+            wtf.Length(min=6, max=100),
+        ),
+        description="Minimum 6 characters long.",
+    )
+    repeat_password = wtf.PasswordField(
+        "Repeat password",
+        validators=(
+            wtf.Required(),
+            wtf.Length(min=6, max=100),
+        ),
+    )

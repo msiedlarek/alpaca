@@ -26,17 +26,6 @@ def reporter(reporter):
         errors=errors,
     )
 
-@blueprint.route('/<error_id>')
-@login_required
-def investigate(error_id):
-    try:
-        error = Error.objects.get(id=error_id)
-    except Error.DoesNotExist:
-        flask.abort(404)
-    return flask.render_template('investigate.html',
-        error=error,
-    )
-
 @blueprint.route('/login', methods=('GET', 'POST',))
 def login():
     form = forms.LoginForm(request.form)
@@ -62,6 +51,26 @@ def logout():
     if form.validate_on_submit():
         flaskext.login.logout_user()
     return flask.redirect(url_for('tracker.login'))
+
+@blueprint.route('/change-password', methods=('GET', 'POST',))
+@login_required
+def change_password():
+    form = forms.ChangePasswordForm(request.form)
+    if form.validate_on_submit():
+        if form.password.data == form.repeat_password.data:
+            user = flaskext.login.current_user
+            user.set_password(form.password.data)
+            user.save()
+            flask.flash("Your password has been successfuly changed.",
+                        'success')
+            flask.redirect(url_for('tracker.change_password'))
+        else:
+            form.repeat_password.errors.append(
+                "Password repeated incorrectly."
+            )
+    return flask.render_template('change_password.html',
+        change_password_form=form,
+    )
 
 @blueprint.route('/report/<api_key>', methods=('POST',))
 def report(api_key):
@@ -102,3 +111,14 @@ def report(api_key):
         push__occurences=occurence
     )
     return ''
+
+@blueprint.route('/error/<error_id>')
+@login_required
+def investigate(error_id):
+    try:
+        error = Error.objects.get(id=error_id)
+    except Error.DoesNotExist:
+        flask.abort(404)
+    return flask.render_template('investigate.html',
+        error=error,
+    )
