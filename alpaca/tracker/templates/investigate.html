@@ -20,42 +20,50 @@
     {% with occurence=error.occurences|last %}
         <table style="margin-top: 10px;" class="table table-bordered">
             <tbody>
-                <tr><th>Path:</th><td><code>{{ occurence.path }}</code></td></tr>
+                <tr><th>Path:</th><td>
+                    {%- if occurence.path -%}
+                        <code>{{ occurence.path }}</code>
+                    {%- else -%}
+                        <span style="color: #aaa;">(not a request)</span>
+                    {%- endif -%}
+                </td></tr>
                 <tr><th>Date:</th><td>{{ occurence.date }}</td></tr>
                 <tr><th>Reporter:</th><td><a href="{{ url_for('tracker.reporter', reporter=occurence.reporter) }}">{{ occurence.reporter }}</a></td></tr>
             </tbody>
         </table>
-        <h3>GET data</h3>
-        <pre style="margin-top: 10px;">
-            {%- for name, value in occurence.get_data|dictsort -%}
-                {{ name }} = {{ value }}<br>
-            {%- else -%}
-                No GET data.
-            {%- endfor -%}
-        </pre>
-        <h3>POST data</h3>
-        <pre style="margin-top: 10px;">
-            {%- for name, value in occurence.post_data|dictsort -%}
-                {{ name }} = {{ value }}<br>
-            {%- else -%}
-                No POST data.
-            {%- endfor -%}
-        </pre>
-        <h3>Cookies</h3>
-        <pre style="margin-top: 10px;">
-            {%- for name, value in occurence.cookies|dictsort -%}
-                {{ name }} = {{ value }}<br>
-            {%- else -%}
-                No cookies.
-            {%- endfor -%}
-        </pre>
-        <h3>Headers</h3>
-        <pre style="margin-top: 10px;">
-            {%- for name, value in occurence.headers|dictsort -%}
-                {{ name }} = {{ value }}<br>
-            {%- else -%}
-                No headers.
-            {%- endfor -%}
-        </pre>
+        {% if occurence.path %}
+            <h3>GET data</h3>
+            <pre style="margin-top: 10px;">
+                {%- for name, value in occurence.get_data|dictsort -%}
+                    {{ name }} = {{ value }}<br>
+                {%- else -%}
+                    No GET data.
+                {%- endfor -%}
+            </pre>
+            <h3>POST data</h3>
+            <pre style="margin-top: 10px;">
+                {%- for name, value in occurence.post_data|dictsort -%}
+                    {{ name }} = {{ value }}<br>
+                {%- else -%}
+                    No POST data.
+                {%- endfor -%}
+            </pre>
+            <h3>Cookies</h3>
+            <pre style="margin-top: 10px;">
+                {%- for name, value in occurence.cookies|dictsort -%}
+                    {{ name }} = {{ value }}<br>
+                {%- else -%}
+                    No cookies.
+                {%- endfor -%}
+            </pre>
+            <h3>Headers</h3>
+            <pre style="margin-top: 10px;">
+                {%- for name, value in occurence.headers|dictsort -%}
+                    {{ name }} = {{ value }}<br>
+                {%- else -%}
+                    No headers.
+                {%- endfor -%}
+            </pre>
+        {% endif %}
     {% endwith %}
 {% endblock %}
