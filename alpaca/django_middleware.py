@@ -27,31 +27,50 @@ def send_alpaca_report(host, port, api_key, message):
         logger.error("Error while sending report to Alpaca: %s"
                      % str(exception))
 
-class AlpacaMiddleware(object):
+def async_send_alpaca_report(host, port, api_key, message):
+    threading.Thread(target=send_alpaca_report, args=(
+        host,
+        port,
+        api_key,
+        message,
+    )).start()
 
-    def process_exception(self, request, exception):
-        try:
+def alpaca_report(exception, request=None):
+    try:
+        message = dict(
+            traceback=traceback.format_exc(exception).strip(),
+            date=datetime.datetime.now().isoformat(),
+            path=None,
+            get_data=None,
+            post_data=None,
+            cookies=None,
+            headers=None,
+        )
+        if request is not None:
             meta = request.META
             for key, value in meta.iteritems():
                 try:
                     meta[key] = str(value)
                 except ValueError:
                     continue
-            message = simplejson.dumps(dict(
-                traceback=traceback.format_exc(exception).strip(),
-                date=datetime.datetime.now().isoformat(),
+            message.update(dict(
                 path=request.path,
                 get_data=request.GET.dict(),
                 post_data=request.POST.dict(),
                 cookies=request.COOKIES,
                 headers=meta,
             ))
-            threading.Thread(target=send_alpaca_report, args=(
-                settings.ALPACA_HOST,
-                settings.ALPACA_PORT,
-                settings.ALPACA_API_KEY,
-                message,
-            )).start()
-        except Exception as exception:
-            logger.error("Error while sending report to Alpaca: %s"
-                         % str(exception))
+        async_send_alpaca_report(
+            settings.ALPACA_HOST,
+            settings.ALPACA_PORT,
+            settings.ALPACA_API_KEY,
+            simplejson.dumps(message),
+        )
+    except Exception as exception:
+        logger.error("Error while sending report to Alpaca: %s"
+                     % str(exception))
+
+class AlpacaMiddleware(object):
+
+    def process_exception(self, request, exception):
+        alpaca_report(exception, request)
