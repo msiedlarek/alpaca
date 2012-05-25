@@ -104,11 +104,27 @@ def report(api_key):
             )
         except db.OperationError:
             pass
-    Error.objects(checksum=checksum).update(
-        set__last_occurrence=occurrence.date,
-        add_to_set__reporters=occurrence.reporter,
-        inc__occurrence_counter=1,
-        push__occurrences=occurrence
+    Error.objects(checksum=checksum).exec_js(
+        """
+            function()
+            {
+                db[collection].find(query).forEach(function(error){
+                    while (error[~occurrences].length > 29) {
+                        error[~occurrences].shift();
+                    }
+                    error[~occurrences].push(options.occurrence);
+                    error[~occurrence_counter]++;
+                    error[~last_occurrence] = options.occurrence.date;
+                    if
+                    (error[~reporters].indexOf(options.occurrence[~occurrences.reporter]) === -1) {
+                        error[~reporters].push(options.occurrence[~occurrences.reporter]);
+                    }
+                    db[collection].save(error);
+                });
+            }
+        """,
+        occurrence=occurrence.to_mongo(),
+        occurrence_history_limit=flask.current_app.config['ERROR_OCCURRENCE_HISTORY_LIMIT']
     )
     return ''
 

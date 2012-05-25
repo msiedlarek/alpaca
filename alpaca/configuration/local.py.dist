@@ -12,3 +12,5 @@ MONGODB_CONNECTIONS = {
         'password': None,
     },
 }
+
+CLIENTS = {}

@@ -29,3 +29,6 @@ CSRF_ENABLED = True
 
 # Mapping of API keys to their client identifiers
 CLIENTS = {}
+
+# Number of last occurences stored for each error
+ERROR_OCCURRENCE_HISTORY_LIMIT = 30
