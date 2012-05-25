@@ -7,7 +7,7 @@
             <tr><th>ID:</th><td><code>{{ error.id }}</code></td></tr>
             <tr><th>Reporters:</th><td>
                 {%- for reporter in error.reporters -%}
-                    <a href="{{ url_for('tracker.reporter', reporter=reporter) }}">{{ reporter }}</a>
+                    <a href="{{ url_for('tracker.reporter', reporter=reporter) }}">{{ reporter }}</a>{% if not loop.last %},{% endif %}
                 {%- endfor -%}
             </td></tr>
             <tr><th>Last occurrence:</th><td>{{ error.last_occurrence }}</td></tr>
