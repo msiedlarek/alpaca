@@ -2,8 +2,8 @@
     <thead>
         <tr>
             <th>Summary</th>
-            <th>Last occurence</th>
-            <th>Occurences</th>
+            <th>Last occurrence</th>
+            <th>Occurrences</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -11,13 +11,13 @@
         {% for error in errors %}
             <tr>
                 <td><code>{{ error.summary|truncate(75, true) }}</code></td>
-                <td>{{ error.last_occurence }}</td>
+                <td>{{ error.last_occurrence }}</td>
                 <td>
-                    <span class="badge {% if error.occurence_counter >= 10 -%}
+                    <span class="badge {% if error.occurrence_counter >= 10 -%}
                         badge-important
-                    {%- elif error.occurence_counter > 1 -%}
+                    {%- elif error.occurrence_counter > 1 -%}
                         badge-warning
-                    {%- endif %}">{{ error.occurence_counter }}</span>
+                    {%- endif %}">{{ error.occurrence_counter }}</span>
                 </td>
                 <td>
                     <div class="btn-group">

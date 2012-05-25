@@ -20,7 +20,7 @@ class User(db.Document, UserMixin):
     def password_matches(self, password_plaintext):
         return bcrypt.check_password_hash(self.password, password_plaintext)
 
-class ErrorOccurence(db.EmbeddedDocument):
+class ErrorOccurrence(db.EmbeddedDocument):
     date = db.DateTimeField(required=True)
     reporter = db.StringField(required=True)
     uri = db.StringField(max_length=2000)
@@ -34,9 +34,9 @@ class Error(db.Document):
     summary = db.StringField(required=True)
     traceback = db.StringField(required=True)
     reporters = db.SortedListField(db.StringField())
-    last_occurence = db.DateTimeField()
-    occurence_counter = db.IntField(default=0)
-    occurences = db.ListField(db.EmbeddedDocumentField(ErrorOccurence))
+    last_occurrence = db.DateTimeField()
+    occurrence_counter = db.IntField(default=0)
+    occurrences = db.ListField(db.EmbeddedDocumentField(ErrorOccurrence))
 
     @property
     def investigation_url(self):

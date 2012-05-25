@@ -6,12 +6,12 @@ from flask import request, url_for
 import flaskext.login
 from flaskext.login import login_required
 from alpaca.tracker import blueprint, forms
-from alpaca.tracker.models import User, Error, ErrorOccurence
+from alpaca.tracker.models import User, Error, ErrorOccurrence
 
 @blueprint.route('/')
 @login_required
 def dashboard():
-    errors = Error.objects.order_by('-last_occurence')[:100]
+    errors = Error.objects.order_by('-last_occurrence')[:100]
     return flask.render_template('dashboard.html',
         errors=errors,
     )
@@ -20,7 +20,7 @@ def dashboard():
 @login_required
 def reporter(reporter):
     errors = Error.objects(reporters=reporter) \
-                  .order_by('-last_occurence')[:100]
+                  .order_by('-last_occurrence')[:100]
     return flask.render_template('reporter.html',
         reporter=reporter,
         errors=errors,
@@ -82,7 +82,7 @@ def report(api_key):
         flask.abort(400)
     try:
         checksum = hashlib.md5(request.json['traceback']).hexdigest()
-        occurence = ErrorOccurence(
+        occurrence = ErrorOccurrence(
             date=iso8601.parse_date(request.json['date']),
             reporter=reporter,
             uri=request.json['uri'],
@@ -105,10 +105,10 @@ def report(api_key):
         except db.OperationError:
             pass
     Error.objects(checksum=checksum).update(
-        set__last_occurence=occurence.date,
-        add_to_set__reporters=occurence.reporter,
-        inc__occurence_counter=1,
-        push__occurences=occurence
+        set__last_occurrence=occurrence.date,
+        add_to_set__reporters=occurrence.reporter,
+        inc__occurrence_counter=1,
+        push__occurrences=occurrence
     )
     return ''
 
