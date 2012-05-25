@@ -9,7 +9,6 @@ class User(db.Document, UserMixin):
     password = db.StringField(max_length=60, required=True)
 
     meta = {
-        'db_alias': 'default',
         'collection': 'users',
         'indexes': ['username',],
     }
@@ -37,6 +36,11 @@ class Error(db.Document):
     last_occurrence = db.DateTimeField()
     occurrence_counter = db.IntField(default=0)
     occurrences = db.ListField(db.EmbeddedDocumentField(ErrorOccurrence))
+
+    meta = {
+        'collection': 'errors',
+        'indexes': ['hash',],
+    }
 
     @property
     def investigation_url(self):
