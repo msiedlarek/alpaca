@@ -24,13 +24,13 @@ class ErrorOccurrence(db.EmbeddedDocument):
     date = db.DateTimeField(required=True)
     reporter = db.StringField(required=True)
     uri = db.StringField(max_length=2000)
-    get_data = db.DictField()
-    post_data = db.DictField()
-    cookies = db.DictField()
-    headers = db.DictField()
+    get_data = db.ListField()
+    post_data = db.ListField()
+    cookies = db.ListField()
+    headers = db.ListField()
 
 class Error(db.Document):
-    checksum = db.StringField(required=True, max_length=100, unique=True)
+    hash = db.StringField(required=True, max_length=100, unique=True)
     summary = db.StringField(required=True)
     traceback = db.StringField(required=True)
     reporters = db.SortedListField(db.StringField())

@@ -1,4 +1,6 @@
+import sys
 import httplib
+import hashlib
 import datetime
 import logging
 import threading
@@ -37,7 +39,12 @@ def async_send_alpaca_report(host, port, api_key, message):
 
 def alpaca_report(exception, request=None):
     try:
+        lowest_frame = traceback.extract_tb(sys.exc_traceback)[-1]
+        hash_ = hashlib.md5(
+            ':'.join((lowest_frame[0], lowest_frame[2], lowest_frame[3]))
+        ).hexdigest()
         message = dict(
+            hash=hash_,
             traceback=traceback.format_exc(exception).strip(),
             date=datetime.datetime.now().isoformat(),
             uri=None,

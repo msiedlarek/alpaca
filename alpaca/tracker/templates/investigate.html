@@ -34,7 +34,7 @@
         {% if occurrence.uri %}
             <h3>GET data</h3>
             <pre style="margin-top: 10px;">
-                {%- for name, value in occurrence.get_data|dictsort -%}
+                {%- for name, value in occurrence.get_data -%}
                     {{ name }} = {{ value }}<br>
                 {%- else -%}
                     No GET data.
@@ -42,7 +42,7 @@
             </pre>
             <h3>POST data</h3>
             <pre style="margin-top: 10px;">
-                {%- for name, value in occurrence.post_data|dictsort -%}
+                {%- for name, value in occurrence.post_data -%}
                     {{ name }} = {{ value }}<br>
                 {%- else -%}
                     No POST data.
@@ -50,7 +50,7 @@
             </pre>
             <h3>Cookies</h3>
             <pre style="margin-top: 10px;">
-                {%- for name, value in occurrence.cookies|dictsort -%}
+                {%- for name, value in occurrence.cookies -%}
                     {{ name }} = {{ value }}<br>
                 {%- else -%}
                     No cookies.
@@ -58,7 +58,7 @@
             </pre>
             <h3>Headers</h3>
             <pre style="margin-top: 10px;">
-                {%- for name, value in occurrence.headers|dictsort -%}
+                {%- for name, value in occurrence.headers -%}
                     {{ name }} = {{ value }}<br>
                 {%- else -%}
                     No headers.

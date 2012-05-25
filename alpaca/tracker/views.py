@@ -81,30 +81,30 @@ def report(api_key):
     if not request.json:
         flask.abort(400)
     try:
-        checksum = hashlib.md5(request.json['traceback']).hexdigest()
+        hash = request.json['hash']
         occurrence = ErrorOccurrence(
             date=iso8601.parse_date(request.json['date']),
             reporter=reporter,
             uri=request.json['uri'],
-            get_data=request.json['get_data'],
-            post_data=request.json['post_data'],
-            cookies=request.json['cookies'],
-            headers=request.json['headers']
+            get_data=sorted(request.json['get_data'].items()),
+            post_data=sorted(request.json['post_data'].items()),
+            cookies=sorted(request.json['cookies'].items()),
+            headers=sorted(request.json['headers'].items())
         )
     except (KeyError, iso8601.ParseError):
         flask.abort(400)
     try:
-        Error.objects.get(checksum=checksum)
+        Error.objects.get(hash=hash)
     except Error.DoesNotExist:
         try:
             Error.objects.create(
-                checksum=checksum,
+                hash=hash,
                 summary=request.json['traceback'].split('\n')[-1],
                 traceback=request.json['traceback']
             )
         except db.OperationError:
             pass
-    Error.objects(checksum=checksum).exec_js(
+    Error.objects(hash=hash).exec_js(
         """
             function()
             {
@@ -114,7 +114,7 @@ def report(api_key):
                     }
                     error[~occurrences].push(options.occurrence);
                     error[~occurrence_counter]++;
-                    error[~last_occurrence] = options.occurrence.date;
+                    error[~last_occurrence] = options.occurrence[~occurrences.date];
                     if
                     (error[~reporters].indexOf(options.occurrence[~occurrences.reporter]) === -1) {
                         error[~reporters].push(options.occurrence[~occurrences.reporter]);
