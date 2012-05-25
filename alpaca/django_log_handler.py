@@ -77,7 +77,15 @@ def alpaca_report(exception, request=None):
         logger.error("Error while sending report to Alpaca: %s"
                      % str(exception))
 
-class AlpacaMiddleware(object):
+class AlpacaLogHandler(logging.Handler):
 
-    def process_exception(self, request, exception):
-        alpaca_report(exception, request)
+    def emit(self, record):
+        try:
+            request = record.request
+        except AttributeError:
+            request = None
+        try:
+            alpaca_report(record.exc_info[1], request)
+        except Exception as exception:
+            logger.error("Error while sending report to Alpaca: %s"
+                         % str(exception))
