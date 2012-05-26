@@ -27,8 +27,8 @@ BLUEPRINTS = (
 # Enables cross-site request forgery protection on WTForms
 CSRF_ENABLED = True
 
-# Mapping of API keys to their client identifiers
-CLIENTS = {}
+# Mapping of reporter identifiers to their API keys
+REPORTERS = {}
 
 # Number of last occurences stored for each error
 ERROR_OCCURRENCE_HISTORY_LIMIT = 30

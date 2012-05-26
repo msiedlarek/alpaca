@@ -1,4 +1,5 @@
 import hashlib
+import hmac
 import iso8601
 import flask
 import mongoengine as db
@@ -24,6 +25,17 @@ def reporter(reporter):
     return flask.render_template('reporter.html',
         reporter=reporter,
         errors=errors,
+    )
+
+@blueprint.route('/error/<error_id>')
+@login_required
+def investigate(error_id):
+    try:
+        error = Error.objects.get(id=error_id)
+    except Error.DoesNotExist:
+        flask.abort(404)
+    return flask.render_template('investigate.html',
+        error=error,
     )
 
 @blueprint.route('/login', methods=('GET', 'POST',))
@@ -72,16 +84,28 @@ def change_password():
         change_password_form=form,
     )
 
-@blueprint.route('/report/<api_key>', methods=('POST',))
-def report(api_key):
+@blueprint.route('/api/report', methods=('POST',))
+def report():
     try:
-        reporter = flask.current_app.config['CLIENTS'][api_key]
+        reporter = request.headers['X_ALPACA_REPORTER']
+        signature = request.headers['X_ALPACA_SIGNATURE']
     except KeyError:
+        flask.abort(400)
+    try:
+        reporter_api_key = flask.current_app.config['REPORTERS'][reporter]
+    except KeyError:
+        flask.abort(401)
+    correct_signature = hmac.new(
+        reporter_api_key,
+        request.data,
+        hashlib.sha256
+    ).hexdigest()
+    if signature != correct_signature:
         flask.abort(401)
     if not request.json:
         flask.abort(400)
     try:
-        hash = request.json['hash']
+        error_hash = request.json['error_hash']
         occurrence = ErrorOccurrence(
             date=iso8601.parse_date(request.json['date']),
             reporter=reporter,
@@ -94,17 +118,17 @@ def report(api_key):
     except (KeyError, iso8601.ParseError):
         flask.abort(400)
     try:
-        Error.objects.get(hash=hash)
+        Error.objects.get(hash=error_hash)
     except Error.DoesNotExist:
         try:
             Error.objects.create(
-                hash=hash,
+                hash=error_hash,
                 summary=request.json['traceback'].split('\n')[-1],
                 traceback=request.json['traceback']
             )
         except db.OperationError:
             pass
-    Error.objects(hash=hash).exec_js(
+    Error.objects(hash=error_hash).exec_js(
         '''
         function(){
             db[collection].find(query).forEach(function(error){
@@ -125,14 +149,3 @@ def report(api_key):
         occurrence_history_limit=flask.current_app.config['ERROR_OCCURRENCE_HISTORY_LIMIT']
     )
     return ''
-
-@blueprint.route('/error/<error_id>')
-@login_required
-def investigate(error_id):
-    try:
-        error = Error.objects.get(id=error_id)
-    except Error.DoesNotExist:
-        flask.abort(404)
-    return flask.render_template('investigate.html',
-        error=error,
-    )

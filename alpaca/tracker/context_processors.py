@@ -7,4 +7,4 @@ def provide_logout_form():
 
 @blueprint.context_processor
 def provide_reporters_list():
-    return dict(reporters=flask.current_app.config['CLIENTS'].values())
+    return dict(reporters=flask.current_app.config['REPORTERS'].keys())

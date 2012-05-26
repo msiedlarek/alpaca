@@ -13,4 +13,5 @@ MONGODB_CONNECTIONS = {
     },
 }
 
-CLIENTS = {}
+# Mapping of reporter identifiers to their API keys
+REPORTERS = {}

@@ -1,5 +1,5 @@
-import sys
 import httplib
+import hmac
 import hashlib
 import datetime
 import logging
@@ -8,14 +8,21 @@ import traceback
 from django.conf import settings
 from django.utils import simplejson
 
-logger = logging.getLogger('motointegrator.contrib.alpaca')
+logger = logging.getLogger(__name__)
 
-def send_alpaca_report(host, port, api_key, message):
+def send_alpaca_report(host, port, reporter, api_key, message):
     try:
+        signature = hmac.new(
+            api_key,
+            message,
+            hashlib.sha256
+        ).hexdigest()
         connection = httplib.HTTPConnection(host, port, timeout=5)
-        connection.putrequest('POST', '/report/%s' % api_key)
+        connection.putrequest('POST', '/api/report')
         connection.putheader('Content-length', len(message))
         connection.putheader('Content-type', 'application/json')
+        connection.putheader('X-Alpaca-Reporter', reporter)
+        connection.putheader('X-Alpaca-Signature', signature)
         connection.endheaders()
         connection.send(message)
         response = connection.getresponse()
@@ -29,10 +36,11 @@ def send_alpaca_report(host, port, api_key, message):
         logger.error("Error while sending report to Alpaca: %s"
                      % str(exception))
 
-def async_send_alpaca_report(host, port, api_key, message):
+def async_send_alpaca_report(host, port, reporter, api_key, message):
     threading.Thread(target=send_alpaca_report, args=(
         host,
         port,
+        reporter,
         api_key,
         message,
     )).start()
@@ -40,12 +48,12 @@ def async_send_alpaca_report(host, port, api_key, message):
 def alpaca_report(exc_info, request=None):
     try:
         lowest_frame = traceback.extract_tb(exc_info[2])[-1]
-        hash_ = hashlib.md5(
+        error_hash = hashlib.md5(
             ':'.join((lowest_frame[0], lowest_frame[2], lowest_frame[3]))
         ).hexdigest()
-        traceback_ = '\n'.join(traceback.format_exception(*exc_info))
+        traceback_ = '\n'.join(traceback.format_exception(*exc_info)).strip()
         message = dict(
-            hash=hash_,
+            error_hash=error_hash,
             traceback=traceback_,
             date=datetime.datetime.now().isoformat(),
             uri=None,
@@ -71,6 +79,7 @@ def alpaca_report(exc_info, request=None):
         async_send_alpaca_report(
             settings.ALPACA_HOST,
             settings.ALPACA_PORT,
+            settings.ALPACA_REPORTER,
             settings.ALPACA_API_KEY,
             simplejson.dumps(message),
         )
