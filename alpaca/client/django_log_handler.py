@@ -47,6 +47,8 @@ def async_send_alpaca_report(host, port, reporter, api_key, message):
 
 def alpaca_report(exc_info, request=None):
     try:
+        if not settings.ALPACA_ENABLED:
+            return
         lowest_frame = traceback.extract_tb(exc_info[2])[-1]
         error_hash = hashlib.md5(
             ':'.join((lowest_frame[0], lowest_frame[2], lowest_frame[3]))
