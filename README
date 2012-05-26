@@ -1,0 +1,276 @@
+Created: 2012-05-26                                    Mikołaj Siedlarek
+Last update: 2012-05-26                             m.siedlarek@nctz.net
+
+
+                                 Alpaca
+              error reporting system for web appliactions
+
+
+Table of Contents
+
+   1. Introduction
+      1.1. Basic concept
+      1.2. Definitions
+   2. Requirements
+   3. Installation
+      3.1. Obtaining code tree from GitHub
+      3.2. Creating required configuration file
+      3.3. Creating Python virtualenv
+      3.4. Running the application
+      3.5. Configuring the HTTP server
+      3.6. Creating and managing users
+   4. Reporting protocol
+   5. Security
+   6. Licensing
+
+1.  Introduction
+
+1.1.  Basic concept
+
+   Alpaca works as a web application providing human-friendly frontend
+   for error analyzer and a API service backend for error reporters
+   (web appliaction). Each of the reporters (Alpaca supports many of
+   them) can report an error occurrence, providing great number of
+   details such as traceback and HTTP request environment details.
+
+   Such reporters errors are aggregated in a manner of reporter's
+   preference. Each report contains a hash of reporter-specific values
+   like exception class name or location which is used to determine
+   if the reported error is just another occurrence of already known
+   one.
+
+1.2.  Definitions
+
+   ALPACA
+      Web applications providing API service for reporting errors and
+      frontend interace for analyzing them.
+
+   REPORTER
+      Application capable of reporting errors or exceptions to ALPACA
+      by specified protocol. Single application can use multiple
+      reporters for different environments like staging and production.
+
+   REPORTER'S IDENTIFIER
+      Plaintext identifier of a reporter used in API communication and
+      frontend interface for specyfing in which application or
+      environment the error occurred.
+
+   REPORTER'S API KEY
+      Secret string known only to ALPACA and REPORTER and stored in
+      their configuration files. Used to sign the exchanged messages
+      using HMAC-SHA256 alorithm. API KEY is never exchanged in a plain
+      text.
+
+   ERROR
+      Single application error case identified by a REPORTER-created
+      hash. Single ERROR may have multiple occurrences reported with
+      their own conditions and environment.
+
+   OCCURRENCE
+      Single ERROR occurrence aggregated under an ERROR object using
+      ERROR hash. Every OCCURRENCE object stores its own environment
+      informations such as HTTP GET/POST parameters or requested URI.
+
+2.  Requirements
+
+   Alpaca is a Python web applications implemented using Flask framework
+   and several open source libraries. For data storage it uses MongoDB.
+
+   Database:
+      MongoDB 1.4+
+
+   Python:
+      Python 2.6+ (not Python 3+)
+
+   Python packages:
+      As described in separate PIP-compatible file
+      `doc/requirements.txt`.
+
+   HTTP server:
+      Any HTTP server supporting FastCGI or WSGI protocol, such as
+      lighttpd, nginx and Apache.
+
+3.  Installation
+
+3.1.  Obtaining code tree from GitHub
+
+   Simply clone the latest `master` branch of the official GitHub
+   repository:
+
+      $ git clone https://github.com/msiedlarek/alpaca.git
+      $ cd alpaca
+
+3.2.  Creating required configuration file
+
+   Copy the provided configuration template:
+
+      $ cp alpaca/configuration/local.py.dist \
+           alpaca/configuration/local.py
+
+   And fill required values:
+
+      DEBUG
+         Should be set to False unless you're a developer hacking
+         around.
+
+      SECRET_KEY
+         Secret string used in creating session hashes. I like to use
+         output of Python function `os.urandom(64)` for this.
+
+      MONGODB_CONNECTIONS
+         You must fill in credentials for `default` connections.
+         Dictionary keys should be self-explanatory.
+
+      REPORTERS
+         Python dictionary mapping the REPORTER IDENTIFIERS to API KEYS,
+         for example:
+
+            REPORTERS = {
+               'production': '94582df0dec577dfb1c97a9ca16226fdf8a6cca6',
+               'staging': '097d9b4928a3406953729c84de2df7253ccf67fb',
+            }
+
+3.3.  Creating Python virtualenv
+
+   Best way to separate requried Python packages from system global
+   ones.
+
+      $ virtualenv environment
+      $ . environment/bin/activate
+      $ pip install -r doc/requirements.txt
+
+3.4.  Running the application
+
+   Scripts for WSGI and FastCGI procols are provided:
+
+      WSGI    - alpaca.wsgi
+      FastCGI - alpaca.fcgi
+
+   If your HTTP server supports WSGI you don't need to start the
+   application process on your own. If you've decided to use FastCGI,
+   you need to start and maintain the application process. My tool of
+   choice for such task would be supervisord (http://supervisord.org).
+
+   You don't need to bother activating your virtualenv - both WSGI and
+   FastCGI scripts do this automatically if your environment is in the
+   `environment` in the repository root. You can customize this path -
+   just modify the FastCGI/WSGI script code.
+
+   NOTE
+      Not that default FastCGI scripts creates a Unix socket in
+      `<repository_root>`/var/alpaca.socket`.
+
+3.5.  Configuring the HTTP server
+
+   For each server configuration of FastCGI/WSGI seem different -
+   consult the server's manual for details. Example configuration for
+   nginx and FastCGI:
+
+      server {
+         server_name  alpaca.example.com;
+
+         error_log  /var/www/alpaca.example.com/logs/error.log;
+         access_log  /var/www/alpaca.example.com/logs/access.log;
+
+         location / {
+            try_files $uri @alpaca;
+         }
+
+         location @alpaca {
+            include fastcgi_params;
+            fastcgi_param PATH_INFO $fastcgi_script_name;
+            fastcgi_param SCRIPT_NAME "";
+            fastcgi_pass
+               unix:/var/www/alpaca.example.com/var/alpaca.socket;
+         }
+      }
+
+3.6.  Creating and managing users
+
+   As ALPACA is a application for command line veterans, user accounts
+   can be added only from command line.
+
+      $ . environment/bin/activate
+      $ ./manage.py createuser <username>
+
+   If the password reset is needed (user forgot his password):
+
+      $ ./manage.py changepass <username>
+
+4.  Reporting protocol
+
+   The report API service allowing reporters to report error
+   occurrences.  Incoming report takes form of HTTP POST request on URI
+   `/api/report` with additional, custom headers:
+
+      X-Alpaca-Reporter
+         Reporter identifier, as in REPORTERS configuration dict key.
+
+      X-Alpaca-Signature
+         HMAC-SHA256 signature of the request built from reporter's API
+         key (as in REPORTERS configuration dict value) and request
+         body.
+
+   The body of the request should be a JSON-encoded object containing
+   all of following fields:
+
+      error_hash
+         Client-customized hash, by which error occurrences are grouped
+         in single error object, no more than 100 characters long.
+
+      date
+         ISO8601-encoded date and time when given error occurred.
+
+      uri
+         URI requested when error occurrend, can be left blank if
+         exception occurred outside of request logic (eg. in a CRON
+         job).
+
+      get_data
+         JSON object of HTTP GET data, blank if error occurred outside
+         of request logic.
+
+      post_data
+         JSON object of HTTP POST data, blank if error occurred outside
+         of request logic.
+
+      cookies
+         JSON object of HTTP cookies, blank if error occurred outside of
+         request logic.
+
+      cookies
+         JSON object of HTTP/FastCGI/WSGI meta headers, blank if error
+         occurred outside of request logic.
+
+   This API returns one of the following HTTP status codes:
+
+      200 OK
+         Incoming message was processed and saved successfully.
+
+      400 BAD REQUEST
+         Missing headers or required data.
+
+      401 UNAUTHORIZED
+         Nonexistent reporter declared or invalid signature.
+
+      500 INTERNAL SERVER ERROR
+         Unexpected condition occurred.
+
+5.  Security
+
+   As a general security measure ALPACA should only be accessible by
+   encrypted HTTPS procol, both frontend (user passwords) and backend
+   (error reports containg possibly sensitive data like the
+   specification of REPORTER environment.
+
+   User passwords are stored in hashed form using BCrypt algorithm.
+
+   API communication is signed (not encrypted - that's what HTTPS layer
+   should take care of) using HMAC-SHA256 algorithm with
+   REPORTER-exclusive secret API KEYs.
+
+6.  Licensing
+
+   ALPACA is an open-source project shared under the terms of
+   New (3-clause) BSD License. Consult the LICENSE file for legal
+   gibberish.
