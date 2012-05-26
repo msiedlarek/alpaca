@@ -86,26 +86,72 @@ def change_password():
 
 @blueprint.route('/api/report', methods=('POST',))
 def report():
+    """
+    The report API service allowing reporters to report error occurrences.
+    Incoming report takes form of HTTP POST request with additional, custom
+    headers:
+
+        X-Alpaca-Reporter  -- reporter identifier, as in REPORTERS configuration
+                              dict key;
+        X-Alpaca-Signature -- HMAC-SHA256 signature of the request built from
+                              reporter's API key (as in REPORTERS configuration
+                              dict value) and request body.
+
+    The body of the request should be a JSON-encoded object containing all of
+    following fields:
+
+        error_hash -- client-customized hash, by which error occurrences are
+                      grouped in single error object, no more than 100
+                      characters long;
+        date       -- ISO8601-encoded date and time when given error occurred;
+        uri        -- URI requested when error occurrend, can be left blank
+                      if exception occurred outside of request logic (eg.
+                      in a CRON job);
+        get_data   -- JSON object of HTTP GET data, blank if error occurred
+                      outside of request logic;
+        post_data  -- JSON object of HTTP POST data, blank if error occurred
+                      outside of request logic;
+        cookies    -- JSON object of HTTP cookies, blank if error occurred
+                      outside of request logic;
+        cookies    -- JSON object of HTTP/FastCGI/WSGI meta headers, blank if
+                      error occurred outside of request logic.
+
+    This API method returns one of the following HTTP codes:
+
+        200 OK                    -- incoming message was processed and saved
+                                     successfully
+        400 BAD REQUEST           -- missing headers or required data
+        401 UNAUTHORIZED          -- nonexistent reporter declared or invalid
+                                     signature
+        500 INTERNAL SERVER ERROR -- unexpected condition occurred
+    """
     try:
+        # Get the identifier of the reporter the error is coming from.
         reporter = request.headers['X_ALPACA_REPORTER']
+        # Get the message HMAC signature.
         signature = request.headers['X_ALPACA_SIGNATURE']
     except KeyError:
+        # Required, Alpaca-specific HTTP headers were not found.
         flask.abort(400)
     try:
         reporter_api_key = flask.current_app.config['REPORTERS'][reporter]
     except KeyError:
+        # Reporter identifier was not found in configuration.
         flask.abort(401)
+    # Report signature is built using HMAC-SHA256 algorithm from reporter's
+    # exclusive API key and the raw, incoming request data.
     correct_signature = hmac.new(
         reporter_api_key,
         request.data,
         hashlib.sha256
     ).hexdigest()
     if signature != correct_signature:
+        # Signature declared in HTTP header is invalid.
         flask.abort(401)
-    if not request.json:
-        flask.abort(400)
     try:
+        # Extract unique for each error hash from incoming data.
         error_hash = request.json['error_hash']
+        # Create occurrence embedded MongoDB document.
         occurrence = ErrorOccurrence(
             date=iso8601.parse_date(request.json['date']),
             reporter=reporter,
@@ -115,37 +161,59 @@ def report():
             cookies=sorted(request.json['cookies'].items()),
             headers=sorted(request.json['headers'].items())
         )
-    except (KeyError, iso8601.ParseError):
+    except (KeyError, flask.exceptions.JSONBadRequest, iso8601.ParseError):
+        # One of the following conditions occurred:
+        #     KeyError        -- the message is missing required JSON key
+        #     JSONBadRequest  -- the message is not a valid JSON
+        #     ParseError      -- the date is not in correct ISO 8601 format
         flask.abort(400)
     try:
+        # Check if error of given hash already exists.
         Error.objects.get(hash=error_hash)
     except Error.DoesNotExist:
         try:
+            # So it doesn't. Try to create one.
             Error.objects.create(
                 hash=error_hash,
                 summary=request.json['traceback'].split('\n')[-1],
                 traceback=request.json['traceback']
             )
         except db.OperationError:
+            # This error *PROBABLY* means other concurrent request created the
+            # error object in a tight spot beetween our checking and creating.
+            # Let's assume that's what happened and go on - we wanted to
+            # have our error and now we have it after all.
             pass
+    # Atomic operation of inserting the new occurence to the error object,
+    # trimming the occurences array to the limit specified in configuration
+    # and setting several caching values, like `last_occurrence` or
+    # `occurrence_counter` on error object.
     Error.objects(hash=error_hash).exec_js(
         '''
         function(){
             db[collection].find(query).forEach(function(error){
-                while (error[~occurrences].length > 29) {
+                while (error[~occurrences].length
+                        > options.occurrence_history_limit - 1) {
                     error[~occurrences].shift();
                 }
                 error[~occurrences].push(options.occurrence);
                 error[~occurrence_counter]++;
                 error[~last_occurrence] = options.occurrence[~occurrences.date];
-                if (error[~reporters].indexOf(options.occurrence[~occurrences.reporter]) === -1) {
-                    error[~reporters].push(options.occurrence[~occurrences.reporter]);
+                if (error[~reporters].indexOf(
+                        options.occurrence[~occurrences.reporter]) === -1) {
+                    error[~reporters].push(
+                        options.occurrence[~occurrences.reporter]
+                    );
                 }
                 db[collection].save(error);
             });
         }
         ''',
+        # Occurrence embedded document converted to MongoDB format.
         occurrence=occurrence.to_mongo(),
-        occurrence_history_limit=flask.current_app.config['ERROR_OCCURRENCE_HISTORY_LIMIT']
+        # Limit of occurrence history stored for each error.
+        occurrence_history_limit=flask.current_app \
+                                      .config['ERROR_OCCURRENCE_HISTORY_LIMIT']
     )
+    # Return empty HTTP 200 OK response.
     return ''
