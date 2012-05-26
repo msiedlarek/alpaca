@@ -37,15 +37,16 @@ def async_send_alpaca_report(host, port, api_key, message):
         message,
     )).start()
 
-def alpaca_report(exception, request=None):
+def alpaca_report(exc_info, request=None):
     try:
-        lowest_frame = traceback.extract_tb(sys.exc_traceback)[-1]
+        lowest_frame = traceback.extract_tb(exc_info[2])[-1]
         hash_ = hashlib.md5(
             ':'.join((lowest_frame[0], lowest_frame[2], lowest_frame[3]))
         ).hexdigest()
+        traceback_ = '\n'.join(traceback.format_exception(*exc_info))
         message = dict(
             hash=hash_,
-            traceback=traceback.format_exc(exception).strip(),
+            traceback=traceback_,
             date=datetime.datetime.now().isoformat(),
             uri=None,
             get_data=None,
@@ -85,7 +86,7 @@ class AlpacaLogHandler(logging.Handler):
         except AttributeError:
             request = None
         try:
-            alpaca_report(record.exc_info[1], request)
+            alpaca_report(record.exc_info, request)
         except Exception as exception:
             logger.error("Error while sending report to Alpaca: %s"
                          % str(exception))
