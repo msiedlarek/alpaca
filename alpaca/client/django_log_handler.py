@@ -12,7 +12,7 @@ logger = logging.getLogger('motointegrator.contrib.alpaca')
 
 def send_alpaca_report(host, port, api_key, message):
     try:
-        connection = httplib.HTTPConnection(host, port, timeout=10)
+        connection = httplib.HTTPConnection(host, port, timeout=5)
         connection.putrequest('POST', '/report/%s' % api_key)
         connection.putheader('Content-length', len(message))
         connection.putheader('Content-type', 'application/json')
