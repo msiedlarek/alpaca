@@ -51,7 +51,7 @@ def alpaca_report(exc_info=None, request=None):
         if not settings.ALPACA_ENABLED:
             return
         if exc_info is None:
-            exc_info = sys.exc_info
+            exc_info = sys.exc_info()
         lowest_frame = traceback.extract_tb(exc_info[2])[-1]
         error_hash = hashlib.md5(
             ':'.join((lowest_frame[0], lowest_frame[2], lowest_frame[3]))
