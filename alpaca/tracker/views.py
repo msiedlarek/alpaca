@@ -132,12 +132,12 @@ def report():
         signature = request.headers['X_ALPACA_SIGNATURE']
     except KeyError:
         # Required, Alpaca-specific HTTP headers were not found.
-        flask.abort(400)
+        return '', 400
     try:
         reporter_api_key = flask.current_app.config['REPORTERS'][reporter]
     except KeyError:
         # Reporter identifier was not found in configuration.
-        flask.abort(401)
+        return '', 401
     # Report signature is built using HMAC-SHA256 algorithm from reporter's
     # exclusive API key and the raw, incoming request data.
     correct_signature = hmac.new(
@@ -147,7 +147,7 @@ def report():
     ).hexdigest()
     if signature != correct_signature:
         # Signature declared in HTTP header is invalid.
-        flask.abort(401)
+        return '', 401
     try:
         # Extract unique for each error hash from incoming data.
         error_hash = request.json['error_hash']
@@ -166,7 +166,7 @@ def report():
         #     KeyError        -- the message is missing required JSON key
         #     JSONBadRequest  -- the message is not a valid JSON
         #     ParseError      -- the date is not in correct ISO 8601 format
-        flask.abort(400)
+        return '', 400
     try:
         # Check if error of given hash already exists.
         Error.objects.get(hash=error_hash)
