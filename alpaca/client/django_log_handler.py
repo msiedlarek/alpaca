@@ -1,49 +1,58 @@
+"""
+Stanard python `logging` handler for Django applications.
+Requires Requests package (http://python-requests.org)
+"""
+
 import sys
-import httplib
 import hmac
 import hashlib
 import datetime
 import logging
 import threading
 import traceback
+import requests
 from django.conf import settings
 from django.utils import simplejson
 
 logger = logging.getLogger(__name__)
 
-def send_alpaca_report(host, port, reporter, api_key, message):
+def send_alpaca_report(url, reporter, api_key, message, ca_bundle=None):
     try:
         signature = hmac.new(
             api_key,
             message,
             hashlib.sha256
         ).hexdigest()
-        connection = httplib.HTTPConnection(host, port, timeout=5)
-        connection.putrequest('POST', '/api/report')
-        connection.putheader('Content-length', len(message))
-        connection.putheader('Content-type', 'application/json')
-        connection.putheader('X-Alpaca-Reporter', reporter)
-        connection.putheader('X-Alpaca-Signature', signature)
-        connection.endheaders()
-        connection.send(message)
-        response = connection.getresponse()
-        connection.close()
-        if response.status != httplib.OK:
-            raise RuntimeError("Alpaca responded with HTTP %d %s" % (
-                response.status,
-                response.reason,
+        if ca_bundle is None:
+            # You can pass `verify` the path to a CA_BUNDLE file for private
+            # certs or just True to perform normal, browser-like verification.
+            ca_bundle = True
+        response = requests.post(
+            '/'.join((url.rstrip('/'), 'api/report')),
+            data=message,
+            headers = {
+                'Content-Type': 'application/json',
+                'X-Alpaca-Reporter': reporter,
+                'X-Alpaca-Signature': signature,
+            },
+            timeout=5,
+            verify=ca_bundle
+        )
+        if response.status_code != 200:
+            raise RuntimeError("Alpaca responded with HTTP %d" % (
+                response.status_code,
             ))
     except Exception as exception:
         logger.error("Error while sending report to Alpaca: %s"
                      % str(exception))
 
-def async_send_alpaca_report(host, port, reporter, api_key, message):
+def async_send_alpaca_report(url, reporter, api_key, message, ca_bundle=None):
     threading.Thread(target=send_alpaca_report, args=(
-        host,
-        port,
+        url,
         reporter,
         api_key,
         message,
+        ca_bundle
     )).start()
 
 def alpaca_report(exc_info=None, request=None):
@@ -82,11 +91,11 @@ def alpaca_report(exc_info=None, request=None):
                 headers=meta,
             ))
         async_send_alpaca_report(
-            settings.ALPACA_HOST,
-            settings.ALPACA_PORT,
+            settings.ALPACA_URL,
             settings.ALPACA_REPORTER,
             settings.ALPACA_API_KEY,
             simplejson.dumps(message),
+            ca_bundle=settings.ALPACA_CA_BUNDLE,
         )
     except Exception as exception:
         logger.error("Error while sending report to Alpaca: %s"

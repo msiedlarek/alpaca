@@ -4,6 +4,7 @@ import iso8601
 import flask
 import mongoengine as db
 from flask import request, url_for
+from werkzeug.exceptions import BadRequest
 import flaskext.login
 from flaskext.login import login_required
 from alpaca.tracker import blueprint, forms
@@ -161,11 +162,11 @@ def report():
             cookies=sorted(request.json['cookies'].items()),
             headers=sorted(request.json['headers'].items())
         )
-    except (KeyError, flask.exceptions.JSONBadRequest, iso8601.ParseError):
+    except (KeyError, BadRequest, iso8601.ParseError):
         # One of the following conditions occurred:
-        #     KeyError        -- the message is missing required JSON key
-        #     JSONBadRequest  -- the message is not a valid JSON
-        #     ParseError      -- the date is not in correct ISO 8601 format
+        #     KeyError   -- the message is missing required JSON key
+        #     BadRequest -- the message is not a valid JSON
+        #     ParseError -- the date is not in correct ISO 8601 format
         return '', 400
     try:
         # Check if error of given hash already exists.
