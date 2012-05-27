@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block head_title -%}{{ error.summary }} - {{ super() }}{%- endblock %}
+
 {% block body_content %}
     <h1>{{ error.summary }}</h1>
     <table style="margin-top: 20px;" class="table table-bordered">
