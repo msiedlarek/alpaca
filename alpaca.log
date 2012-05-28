@@ -1,0 +1,13 @@
+2012-05-28 14:28:32,187 ERROR: Exception on /login [GET] [in /Users/msiedlarek/Projects/alpaca/environment/lib/python2.7/site-packages/flask/app.py:1210]
+Traceback (most recent call last):
+  File "/Users/msiedlarek/Projects/alpaca/environment/lib/python2.7/site-packages/flask/app.py", line 1504, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/msiedlarek/Projects/alpaca/environment/lib/python2.7/site-packages/flask/app.py", line 1264, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/msiedlarek/Projects/alpaca/environment/lib/python2.7/site-packages/flask/app.py", line 1262, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/msiedlarek/Projects/alpaca/environment/lib/python2.7/site-packages/flask/app.py", line 1248, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/msiedlarek/Projects/alpaca/alpaca/tracker/views.py", line 44, in login
+    raise ValueError(flask.current_app.debug)
+ValueError: False

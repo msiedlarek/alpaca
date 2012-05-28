@@ -15,3 +15,5 @@ MONGODB_CONNECTIONS = {
 
 # Mapping of reporter identifiers to their API keys
 REPORTERS = {}
+
+LOG_FILE = None

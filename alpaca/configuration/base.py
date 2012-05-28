@@ -32,3 +32,6 @@ REPORTERS = {}
 
 # Number of last occurences stored for each error
 ERROR_OCCURRENCE_HISTORY_LIMIT = 30
+
+# Log file
+LOG_FILE = None

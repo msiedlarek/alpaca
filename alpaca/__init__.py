@@ -1,3 +1,4 @@
+import logging
 import importlib
 import flask
 import mongoengine
@@ -11,6 +12,15 @@ def create_application(configuration_module=DEFAULT_CONFIGURATION_MODULE):
     application = flask.Flask(__name__, static_url_path='/global-static')
     # Load configuration
     application.config.from_object(configuration_module)
+    # Setup log file
+    if application.config['LOG_FILE'] is not None:
+        handler = logging.FileHandler(application.config['LOG_FILE'])
+        handler.setLevel(logging.INFO)
+        handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s '
+                '[in %(pathname)s:%(lineno)d]'
+        ))
+        application.logger.addHandler(handler)
     # Register blueprint modules
     for module_name, url_prefix in application.config['BLUEPRINTS']:
         blueprint_module = importlib.import_module(module_name)
