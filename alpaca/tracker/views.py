@@ -169,22 +169,20 @@ def report():
         #     ParseError -- the date is not in correct ISO 8601 format
         return '', 400
     try:
-        # Check if error of given hash already exists.
-        Error.objects.get(hash=error_hash)
-    except Error.DoesNotExist:
-        try:
-            # So it doesn't. Try to create one.
-            Error.objects.create(
-                hash=error_hash,
+        # Check if error of given hash already exists, if not - create one.
+        Error.objects.get_or_create(
+            hash=error_hash,
+            defaults=dict(
                 summary=request.json['traceback'].split('\n')[-1],
                 traceback=request.json['traceback']
             )
-        except db.OperationError:
-            # This error *PROBABLY* means other concurrent request created the
-            # error object in a tight spot beetween our checking and creating.
-            # Let's assume that's what happened and go on - we wanted to
-            # have our error and now we have it after all.
-            pass
+        )
+    except db.OperationError:
+        # This error *PROBABLY* means other concurrent request created the
+        # error object in a tight spot beetween our checking and creating.
+        # Let's assume that's what happened and go on - we wanted to
+        # have our error and now we have it after all.
+        pass
     # Atomic operation of inserting the new occurence to the error object
     # and setting several caching values, like `last_occurrence` or
     # `occurrence_counter` on error object.
