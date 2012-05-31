@@ -39,8 +39,9 @@ def send_alpaca_report(url, reporter, api_key, message, ca_bundle=None):
             verify=ca_bundle
         )
         if response.status_code != 200:
-            raise RuntimeError("Alpaca responded with HTTP %d" % (
+            raise RuntimeError("Alpaca responded with HTTP %d: %s" % (
                 response.status_code,
+                response.content.strip()
             ))
     except Exception as exception:
         logger.error("Error while sending report to Alpaca: %s"

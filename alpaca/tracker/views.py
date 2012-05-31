@@ -13,7 +13,11 @@ from alpaca.tracker.models import User, Error, ErrorOccurrence
 @blueprint.route('/')
 @login_required
 def dashboard():
-    errors = Error.objects.order_by('-last_occurrence')[:100]
+    errors = Error.objects.only(
+        'summary',
+        'last_occurrence',
+        'occurrence_counter',
+    ).order_by('-last_occurrence')[:100]
     return flask.render_template('dashboard.html',
         errors=errors,
     )
@@ -21,8 +25,13 @@ def dashboard():
 @blueprint.route('/reporter/<reporter>')
 @login_required
 def reporter(reporter):
-    errors = Error.objects(reporters=reporter) \
-                  .order_by('-last_occurrence')[:100]
+    errors = Error.objects(
+        reporters=reporter
+    ).only(
+        'summary',
+        'last_occurrence',
+        'occurrence_counter',
+    ).order_by('-last_occurrence')[:100]
     return flask.render_template('reporter.html',
         reporter=reporter,
         errors=errors,
@@ -134,12 +143,12 @@ def report():
         signature = request.headers['X_ALPACA_SIGNATURE']
     except KeyError:
         # Required, Alpaca-specific HTTP headers were not found.
-        return '', 400
+        return 'Missing alpaca headers.\r\n', 400
     try:
         reporter_api_key = flask.current_app.config['REPORTERS'][reporter]
     except KeyError:
         # Reporter identifier was not found in configuration.
-        return '', 401
+        return 'Unknown reporter.\r\n', 401
     # Report signature is built using HMAC-SHA256 algorithm from reporter's
     # exclusive API key and the raw, incoming request data.
     correct_signature = hmac.new(
@@ -149,7 +158,10 @@ def report():
     ).hexdigest()
     if signature != correct_signature:
         # Signature declared in HTTP header is invalid.
-        return '', 401
+        return 'Invalid signature.\r\n', 401
+    if request.json is None:
+        # Request is not of content-type application/json or is not valid JSON.
+        return 'Not a valid JSON object.\r\n', 400
     try:
         # Extract unique for each error hash from incoming data.
         error_hash = request.json['error_hash']
@@ -163,12 +175,11 @@ def report():
             cookies=sorted(request.json['cookies'].items()),
             headers=sorted(request.json['headers'].items())
         )
-    except (KeyError, BadRequest, iso8601.ParseError):
+    except (KeyError, iso8601.ParseError):
         # One of the following conditions occurred:
         #     KeyError   -- the message is missing required JSON key
-        #     BadRequest -- the message is not a valid JSON
         #     ParseError -- the date is not in correct ISO 8601 format
-        return '', 400
+        return 'Message inconsistent with required protocol.\r\n', 400
     try:
         # Check if error of given hash already exists, if not - create one.
         Error.objects.get_or_create(
@@ -203,5 +214,5 @@ def report():
         dec__occurrence_array_size=1,
         pop__occurrences=-1,
     )
-    # Return empty HTTP 200 OK response.
-    return ''
+    # Return HTTP 200 OK response.
+    return 'OK\r\n'
