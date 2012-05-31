@@ -48,8 +48,10 @@ def investigate(error_id):
         error = Error.objects.get(id=error_id)
     except Error.DoesNotExist:
         flask.abort(404)
+    tags_form = forms.TagsForm(tags=', '.join(error.tags))
     return flask.render_template('investigate.html',
         error=error,
+        tags_form=tags_form,
     )
 
 @blueprint.route('/error/<error_id>/set-tags', methods=('POST',))
@@ -59,29 +61,30 @@ def set_tags(error_id):
         error = Error.objects.get(id=error_id)
     except Error.DoesNotExist:
         flask.abort(404)
-    error.tags = [
-        tag.strip()
-        for tag
-        in request.form.get('tags', '').split(',')
-    ]
-    tags = [
-        tag.strip()
-        for tag
-        in request.form.get('tags', '').split(',')
-        if tag.strip()
-    ]
-    for tag in tags:
-        if VALID_TAG_RE.match(tag) is None:
+    form = forms.TagsForm(request.form)
+    if form.validate_on_submit():
+        tags = [
+            tag.strip()
+            for tag
+            in form.tags.data.split(',')
+            if tag.strip()
+        ]
+        valid = True
+        for tag in tags:
+            if VALID_TAG_RE.match(tag) is None:
+                valid = False
+                break
+        if valid:
+            error.tags = tags
+            error.save()
             if request.is_xhr:
-                return 'Invalid tags\r\n', 400
-            flask.flash("Sorry, tags you have provided were invalid.", 'error')
+                return 'OK\r\n'
+            flask.flash("Tags have been successfully saved.", 'success')
             return flask.redirect(url_for('tracker.investigate',
                                           error_id=error_id))
-    error.tags = tags
-    error.save()
     if request.is_xhr:
-        return 'OK\r\n'
-    flask.flash("Tags have been successfully saved.", 'success')
+        return 'Invalid tags\r\n', 400
+    flask.flash("Sorry, tags you have provided were invalid.", 'error')
     return flask.redirect(url_for('tracker.investigate', error_id=error_id))
 
 @blueprint.route('/login', methods=('GET', 'POST',))

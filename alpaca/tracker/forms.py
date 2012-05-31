@@ -29,3 +29,6 @@ class ChangePasswordForm(wtf.Form):
             wtf.Length(min=6, max=100),
         ),
     )
+
+class TagsForm(wtf.Form):
+    tags = wtf.TextField()

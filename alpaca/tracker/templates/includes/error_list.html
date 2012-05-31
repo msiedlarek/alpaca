@@ -2,9 +2,9 @@
     <thead>
         <tr>
             <th>Summary</th>
+            <th>Tags</th>
             <th>Last occurrence</th>
             <th>Occurrences</th>
-            <th>Tags</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -12,6 +12,11 @@
         {% for error in errors %}
             <tr>
                 <td><code>{{ error.summary|truncate(75, true) }}</code></td>
+                <td>
+                    {% for tag in error.tags -%}
+                        <span class="label">{{ tag }}</span>
+                    {% endfor %}
+                </td>
                 <td>{{ error.last_occurrence }}</td>
                 <td>
                     <span class="badge {% if error.occurrence_counter >= 10 -%}
@@ -20,10 +25,6 @@
                         badge-warning
                     {%- endif %}">{{ error.occurrence_counter }}</span>
                 </td>
-                <td>
-                    {% for tag in error.tags -%}
-                        <span class="label">{{ tag }}</span>
-                    {% endfor %}
                 <td>
                     <div class="btn-group">
                         <a href="{{ url_for('tracker.investigate',
