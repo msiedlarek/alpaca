@@ -35,6 +35,7 @@ class Error(db.Document):
     reporters = db.SortedListField(db.StringField())
     last_occurrence = db.DateTimeField()
     occurrence_counter = db.IntField(default=0)
+    occurrence_array_size = db.IntField(default=0)
     occurrences = db.ListField(db.EmbeddedDocumentField(ErrorOccurrence))
 
     meta = {

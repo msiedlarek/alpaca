@@ -185,36 +185,24 @@ def report():
             # Let's assume that's what happened and go on - we wanted to
             # have our error and now we have it after all.
             pass
-    # Atomic operation of inserting the new occurence to the error object,
-    # trimming the occurences array to the limit specified in configuration
+    # Atomic operation of inserting the new occurence to the error object
     # and setting several caching values, like `last_occurrence` or
     # `occurrence_counter` on error object.
-    Error.objects(hash=error_hash).exec_js(
-        '''
-        function(){
-            db[collection].find(query).forEach(function(error){
-                while (error[~occurrences].length
-                        > options.occurrence_history_limit - 1) {
-                    error[~occurrences].shift();
-                }
-                error[~occurrences].push(options.occurrence);
-                error[~occurrence_counter]++;
-                error[~last_occurrence] = options.occurrence[~occurrences.date];
-                if (error[~reporters].indexOf(
-                        options.occurrence[~occurrences.reporter]) === -1) {
-                    error[~reporters].push(
-                        options.occurrence[~occurrences.reporter]
-                    );
-                }
-                db[collection].save(error);
-            });
-        }
-        ''',
-        # Occurrence embedded document converted to MongoDB format.
-        occurrence=occurrence.to_mongo(),
-        # Limit of occurrence history stored for each error.
-        occurrence_history_limit=flask.current_app \
-                                      .config['ERROR_OCCURRENCE_HISTORY_LIMIT']
+    Error.objects(hash=error_hash).update(
+        push__occurrences=occurrence,
+        inc__occurrence_counter=1,
+        inc__occurrence_array_size=1,
+        set__last_occurrence=occurrence.date,
+        add_to_set__reporters=occurrence.reporter,
+    )
+    # Trimming the occurences array to the limit specified in configuration.
+    Error.objects(
+        hash=error_hash,
+        occurrence_array_size__gt=
+            flask.current_app.config['ERROR_OCCURRENCE_HISTORY_LIMIT'],
+    ).update(
+        dec__occurrence_array_size=1,
+        pop__occurrences=-1,
     )
     # Return empty HTTP 200 OK response.
     return ''
