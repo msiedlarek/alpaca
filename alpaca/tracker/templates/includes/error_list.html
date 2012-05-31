@@ -4,6 +4,7 @@
             <th>Summary</th>
             <th>Last occurrence</th>
             <th>Occurrences</th>
+            <th>Tags</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -19,6 +20,10 @@
                         badge-warning
                     {%- endif %}">{{ error.occurrence_counter }}</span>
                 </td>
+                <td>
+                    {% for tag in error.tags -%}
+                        <span class="label">{{ tag }}</span>
+                    {% endfor %}
                 <td>
                     <div class="btn-group">
                         <a href="{{ url_for('tracker.investigate',

@@ -1,14 +1,16 @@
 import hashlib
 import hmac
+import re
 import iso8601
 import flask
 import mongoengine as db
 from flask import request, url_for
-from werkzeug.exceptions import BadRequest
 import flaskext.login
 from flaskext.login import login_required
 from alpaca.tracker import blueprint, forms
 from alpaca.tracker.models import User, Error, ErrorOccurrence
+
+VALID_TAG_RE = re.compile(r'^[^,\s]+$')
 
 @blueprint.route('/')
 @login_required
@@ -17,6 +19,7 @@ def dashboard():
         'summary',
         'last_occurrence',
         'occurrence_counter',
+        'tags',
     ).order_by('-last_occurrence')[:100]
     return flask.render_template('dashboard.html',
         errors=errors,
@@ -31,6 +34,7 @@ def reporter(reporter):
         'summary',
         'last_occurrence',
         'occurrence_counter',
+        'tags',
     ).order_by('-last_occurrence')[:100]
     return flask.render_template('reporter.html',
         reporter=reporter,
@@ -47,6 +51,38 @@ def investigate(error_id):
     return flask.render_template('investigate.html',
         error=error,
     )
+
+@blueprint.route('/error/<error_id>/set-tags', methods=('POST',))
+@login_required
+def set_tags(error_id):
+    try:
+        error = Error.objects.get(id=error_id)
+    except Error.DoesNotExist:
+        flask.abort(404)
+    error.tags = [
+        tag.strip()
+        for tag
+        in request.form.get('tags', '').split(',')
+    ]
+    tags = [
+        tag.strip()
+        for tag
+        in request.form.get('tags', '').split(',')
+        if tag.strip()
+    ]
+    for tag in tags:
+        if VALID_TAG_RE.match(tag) is None:
+            if request.is_xhr:
+                return 'Invalid tags\r\n', 400
+            flask.flash("Sorry, tags you have provided were invalid.", 'error')
+            return flask.redirect(url_for('tracker.investigate',
+                                          error_id=error_id))
+    error.tags = tags
+    error.save()
+    if request.is_xhr:
+        return 'OK\r\n'
+    flask.flash("Tags have been successfully saved.", 'success')
+    return flask.redirect(url_for('tracker.investigate', error_id=error_id))
 
 @blueprint.route('/login', methods=('GET', 'POST',))
 def login():

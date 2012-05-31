@@ -14,6 +14,14 @@
             </td></tr>
             <tr><th>Last occurrence:</th><td>{{ error.last_occurrence }}</td></tr>
             <tr><th>Occurrences total:</th><td>{{ error.occurrence_counter }}</td></tr>
+            <tr><th>Tags:</th><td>
+                <form action="{{ url_for('tracker.set_tags', error_id=error.id) }}?set-tags" method="post" style="margin-bottom: 0;">
+                    <div class="input-append">
+                        <input type="text" name="tags" class="input-xlarge" value="{{ error.tags|join(", ") }}">{#
+                        #}<input type="submit" class="btn btn-primary" value="Save">
+                    </div>
+                </form>
+            </td></tr>
         </tbody>
     </table>
     <h2>Traceback</h2>
