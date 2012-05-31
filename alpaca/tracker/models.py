@@ -40,7 +40,7 @@ class Error(db.Document):
 
     meta = {
         'collection': 'errors',
-        'indexes': ['hash',],
+        'indexes': ['hash', 'last_occurrence',],
     }
 
     @property
