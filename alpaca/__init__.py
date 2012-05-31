@@ -7,11 +7,16 @@ __all__ = ('create_application',)
 
 DEFAULT_CONFIGURATION_MODULE = 'alpaca.configuration'
 
-def create_application(configuration_module=DEFAULT_CONFIGURATION_MODULE):
+def create_application(configuration_module=DEFAULT_CONFIGURATION_MODULE,
+                       override_configuration=None):
     # Create application instance
     application = flask.Flask(__name__, static_url_path='/global-static')
     # Load configuration
     application.config.from_object(configuration_module)
+    # Override configuration
+    if override_configuration is not None:
+        for name, value in override_configuration.iteritems():
+            application.config[name] = value
     # Setup log file
     if application.config['LOG_FILE'] is not None:
         handler = logging.FileHandler(application.config['LOG_FILE'])
@@ -39,5 +44,13 @@ def setup_extensions(application):
     login_manager.setup_app(application)
 
 def database_connect(application):
-    for alias, parameters in application.config['MONGODB_CONNECTIONS'].items():
-        mongoengine.register_connection(alias, **parameters)
+    if application.config['TESTING']:
+        mongoengine.register_connection(
+            'default',
+            **application.config['MONGODB_CONNECTIONS']['testing']
+        )
+    else:
+        mongoengine.register_connection(
+            'default',
+            **application.config['MONGODB_CONNECTIONS']['default']
+        )

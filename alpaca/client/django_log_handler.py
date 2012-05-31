@@ -69,7 +69,7 @@ def alpaca_report(exc_info=None, request=None):
         message = dict(
             error_hash=error_hash,
             traceback=traceback_,
-            date=datetime.datetime.now().isoformat(),
+            date=datetime.datetime.utcnow().isoformat(),
             uri=None,
             get_data=None,
             post_data=None,

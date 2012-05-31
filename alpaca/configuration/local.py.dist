@@ -11,6 +11,12 @@ MONGODB_CONNECTIONS = {
         'username': None,
         'password': None,
     },
+    'testing': {
+        'name': 'alpaca_testing',
+        'host': 'localhost',
+        'username': None,
+        'password': None,
+    },
 }
 
 # Mapping of reporter identifiers to their API keys
