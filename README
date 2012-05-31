@@ -219,7 +219,7 @@ Table of Contents
          in single error object, no more than 100 characters long.
 
       date
-         ISO8601-encoded date and time when given error occurred.
+         ISO8601-encoded UTC date and time when given error occurred.
 
       uri
          URI requested when error occurrend, can be left blank if

@@ -104,7 +104,8 @@ def report():
         error_hash -- client-customized hash, by which error occurrences are
                       grouped in single error object, no more than 100
                       characters long;
-        date       -- ISO8601-encoded date and time when given error occurred;
+        date       -- ISO8601-encoded UTC date and time when given error
+                      occurred;
         uri        -- URI requested when error occurrend, can be left blank
                       if exception occurred outside of request logic (eg.
                       in a CRON job);
