@@ -15,12 +15,18 @@ def createuser(username):
         print ("Username can only contain: letters (A-B, a-b), numbers (0-9),"
                " underscore (_), dot (.) and 'at' sign (@).")
         sys.exit(1)
-    password = _get_new_password()
     from alpaca.tracker.models import User
-    print "Creating new user..."
-    user = User(username=username)
-    user.set_password(password)
-    user.save()
+    try:
+        User.objects.get(username=username)
+    except User.DoesNotExist:
+        password = _get_new_password()
+        print "Creating new user..."
+        user = User(username=username)
+        user.set_password(password)
+        user.save()
+    else:
+        print "This user already exists: %s" % username
+        sys.exit(1)
     print "done."
 
 @manager.command

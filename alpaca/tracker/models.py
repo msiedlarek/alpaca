@@ -5,7 +5,7 @@ from alpaca.ext import bcrypt
 
 class User(db.Document, UserMixin):
 
-    username = db.StringField(max_length=50, required=True)
+    username = db.StringField(max_length=50, required=True, unique=True)
     password = db.StringField(max_length=60, required=True)
 
     meta = {
