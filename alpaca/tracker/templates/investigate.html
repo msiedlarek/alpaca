@@ -18,54 +18,88 @@
     </table>
     <h2>Traceback</h2>
     <pre style="margin-top: 10px;">{{ error.traceback }}</pre>
-    <h2>Last occurrence</h2>
-    {% with occurrence=error.occurrences|last %}
-        <table style="margin-top: 10px;" class="table table-bordered">
-            <tbody>
-                <tr><th>URI:</th><td>
-                    {%- if occurrence.uri -%}
-                        <a href="{{ occurrence.uri }}">{{ occurrence.uri }}</a>
-                    {%- else -%}
-                        <span style="color: #aaa;">(not a request)</span>
-                    {%- endif -%}
-                </td></tr>
-                <tr><th>Date:</th><td>{{ occurrence.date }}</td></tr>
-                <tr><th>Reporter:</th><td><a href="{{ url_for('tracker.reporter', reporter=occurrence.reporter) }}">{{ occurrence.reporter }}</a></td></tr>
-            </tbody>
-        </table>
-        {% if occurrence.uri %}
-            <h3>GET data</h3>
-            <pre style="margin-top: 10px;">
-                {%- for name, value in occurrence.get_data -%}
-                    {{ name }} = {{ value }}<br>
-                {%- else -%}
-                    No GET data.
-                {%- endfor -%}
-            </pre>
-            <h3>POST data</h3>
-            <pre style="margin-top: 10px;">
-                {%- for name, value in occurrence.post_data -%}
-                    {{ name }} = {{ value }}<br>
-                {%- else -%}
-                    No POST data.
-                {%- endfor -%}
-            </pre>
-            <h3>Cookies</h3>
-            <pre style="margin-top: 10px;">
-                {%- for name, value in occurrence.cookies -%}
-                    {{ name }} = {{ value }}<br>
-                {%- else -%}
-                    No cookies.
-                {%- endfor -%}
-            </pre>
-            <h3>Headers</h3>
-            <pre style="margin-top: 10px;">
-                {%- for name, value in occurrence.headers -%}
-                    {{ name }} = {{ value }}<br>
-                {%- else -%}
-                    No headers.
-                {%- endfor -%}
-            </pre>
+    {% if error.occurrences|length > 1 %}
+        <h2>Occurrences</h2>
+    {% else %}
+        <h2>Occurrence</h2>
+    {% endif %}
+    <div id="occurrences" class="tabbable" style="margin-top: 5px;">
+        {% if error.occurrences|length > 1 %}
+            <ul class="nav nav-tabs">
+                {% for occurrence in error.occurrences|reverse %}
+                    <li><a href="#occurrence-{{ error.occurrence_counter - loop.index0 }}" data-toggle="tab">{{ error.occurrence_counter - loop.index0 }}</a></li>
+                {% endfor %}
+            </ul>
         {% endif %}
-    {% endwith %}
+        <div class="tab-content">
+            {% for occurrence in error.occurrences|reverse %}
+                <div class="tab-pane active" id="occurrence-{{ error.occurrence_counter - loop.index0 }}">
+                    <a href="#top" class="top-link" style="float: right; line-height: 40px;">Do góry &uarr;</a>
+                    <h2 style="margin-bottom: 10px;">Occurrence #{{ error.occurrence_counter - loop.index0 }}</h2>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr><th>URI:</th><td>
+                                {%- if occurrence.uri -%}
+                                    <a href="{{ occurrence.uri }}">{{ occurrence.uri }}</a>
+                                {%- else -%}
+                                    <span style="color: #aaa;">(not a request)</span>
+                                {%- endif -%}
+                            </td></tr>
+                            <tr><th>Date:</th><td>{{ occurrence.date }}</td></tr>
+                            <tr><th>Reporter:</th><td><a href="{{ url_for('tracker.reporter', reporter=occurrence.reporter) }}">{{ occurrence.reporter }}</a></td></tr>
+                        </tbody>
+                    </table>
+                    {% if occurrence.uri %}
+                        <h3>GET data</h3>
+                        <pre style="margin-top: 10px;">
+                            {%- for name, value in occurrence.get_data -%}
+                                {{ name }} = {{ value }}<br>
+                            {%- else -%}
+                                No GET data.
+                            {%- endfor -%}
+                        </pre>
+                        <h3>POST data</h3>
+                        <pre style="margin-top: 10px;">
+                            {%- for name, value in occurrence.post_data -%}
+                                {{ name }} = {{ value }}<br>
+                            {%- else -%}
+                                No POST data.
+                            {%- endfor -%}
+                        </pre>
+                        <h3>Cookies</h3>
+                        <pre style="margin-top: 10px;">
+                            {%- for name, value in occurrence.cookies -%}
+                                {{ name }} = {{ value }}<br>
+                            {%- else -%}
+                                No cookies.
+                            {%- endfor -%}
+                        </pre>
+                        <h3>Headers</h3>
+                        <pre style="margin-top: 10px;">
+                            {%- for name, value in occurrence.headers -%}
+                                {{ name }} = {{ value }}<br>
+                            {%- else -%}
+                                No headers.
+                            {%- endfor -%}
+                        </pre>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block body_scripts %}
+    {{ super() }}
+    <script>
+        $(function(){
+            $("#occurrences .tab-content .tab-pane").removeClass("active");
+            $("#occurrences .nav li:first-child, #occurrences .tab-content .tab-pane:first-child").addClass("active");
+            $("#occurrences .tab-content .tab-pane h2, #occurrences .tab-content .tab-pane a.top-link").hide();
+            $('#occurrences .nav a').click(function(event){
+                event.preventDefault();
+                $(this).tab('show');
+            });
+        });
+    </script>
 {% endblock %}

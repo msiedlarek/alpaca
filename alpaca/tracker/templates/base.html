@@ -11,7 +11,7 @@
         <title>{% block head_title -%}Alpaca{%- endblock %}</title>
     </head>
     <body>
-        <div class="container">
+        <div id="top" class="container">
             <div class="navbar navbar-fixed-top">
                 <div class="navbar-inner">
                     <div class="container">
@@ -61,6 +61,7 @@
         {% block body_scripts %}
             <script src="{{ url_for('tracker.static', filename='jquery/js/jquery-1.7.2.min.js') }}"></script>
             <script src="{{ url_for('tracker.static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+            <script src="{{ url_for('tracker.static', filename='bootstrap/js/bootstrap-tab.js') }}"></script>
         {% endblock %}
     </body>
 </html>
