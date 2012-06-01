@@ -44,11 +44,6 @@ class Error(db.Document):
         'indexes': ['hash', 'last_occurrence',],
     }
 
-
-    @property
-    def id_string(self):
-        return str(self.id)
-
     @property
     def investigation_url(self):
-        return flask.url_for('tracker.investigate', error_id=self.id_string)
+        return flask.url_for('tracker.investigate', error_id=self.id)
