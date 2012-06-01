@@ -63,20 +63,19 @@ def set_tags(error_id):
         flask.abort(404)
     form = forms.TagsForm(request.form)
     if form.validate_on_submit():
-        tags = [
+        tags = list(set([
             tag.strip()
             for tag
             in form.tags.data.split(',')
             if tag.strip()
-        ]
+        ]))
         valid = True
         for tag in tags:
             if VALID_TAG_RE.match(tag) is None:
                 valid = False
                 break
         if valid:
-            error.tags = tags
-            error.save()
+            error.update(set__tags=tags)
             if request.is_xhr:
                 return 'OK\r\n'
             flask.flash("Tags have been successfully saved.", 'success')
