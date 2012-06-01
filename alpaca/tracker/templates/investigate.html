@@ -6,7 +6,7 @@
     <h1>{{ error.summary }}</h1>
     <table style="margin-top: 20px;" class="table table-bordered alpaca-parameters">
         <tbody>
-            <tr><th>ID:</th><td><code>{{ error.id }}</code></td></tr>
+            <tr><th>ID:</th><td><code>{{ error.id_string }}</code></td></tr>
             <tr><th>Reporters:</th><td>
                 {%- for reporter in error.reporters|sort -%}
                     <a href="{{ url_for('tracker.reporter', reporter=reporter) }}">{{ reporter }}</a>{% if not loop.last %}, {% endif %}
@@ -15,7 +15,7 @@
             <tr><th>Last occurrence:</th><td>{{ error.last_occurrence }}</td></tr>
             <tr><th>Occurrences total:</th><td>{{ error.occurrence_counter }}</td></tr>
             <tr><th>Tags:</th><td>
-                <form action="{{ url_for('tracker.set_tags', error_id=error.id) }}?set-tags" method="post" style="margin-bottom: 0;" id="tags-form">
+                <form action="{{ url_for('tracker.set_tags', error_id=error.id_string) }}?set-tags" method="post" style="margin-bottom: 0;" id="tags-form">
                     <div class="input-append" style="margin: 0;">
                         {{ tags_form.csrf_token }}
                         {{ tags_form.tags(class='input-xlarge') }}<input type="submit" class="btn btn-primary" value="Save">
@@ -107,7 +107,7 @@
                 return;
             }
             $.post(
-                "{{ url_for('tracker.set_tags', error_id=error.id) }}",
+                "{{ url_for('tracker.set_tags', error_id=error.id_string) }}",
                 {
                     csrf_token: ALPACA_CSRF_TOKEN,
                     tags: tags.join()
