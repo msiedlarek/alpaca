@@ -16,7 +16,7 @@ VALID_TAG_RE = re.compile(r'^[^,\s]+$')
 @login_required
 def dashboard():
     errors = Error.objects.only(
-        'summary',
+        'message',
         'last_occurrence',
         'occurrence_counter',
         'tags',
@@ -31,7 +31,7 @@ def reporter(reporter):
     errors = Error.objects(
         reporters=reporter
     ).only(
-        'summary',
+        'message',
         'last_occurrence',
         'occurrence_counter',
         'tags',
@@ -134,46 +134,6 @@ def change_password():
 
 @blueprint.route('/api/report', methods=('POST',))
 def report():
-    """
-    The report API service allowing reporters to report error occurrences.
-    Incoming report takes form of HTTP POST request with additional, custom
-    headers:
-
-        X-Alpaca-Reporter  -- reporter identifier, as in REPORTERS configuration
-                              dict key;
-        X-Alpaca-Signature -- HMAC-SHA256 signature of the request built from
-                              reporter's API key (as in REPORTERS configuration
-                              dict value) and request body.
-
-    The body of the request should be a JSON-encoded object containing all of
-    following fields:
-
-        error_hash -- client-customized hash, by which error occurrences are
-                      grouped in single error object, no more than 100
-                      characters long;
-        date       -- ISO8601-encoded UTC date and time when given error
-                      occurred;
-        uri        -- URI requested when error occurrend, can be left blank
-                      if exception occurred outside of request logic (eg.
-                      in a CRON job);
-        get_data   -- JSON object of HTTP GET data, blank if error occurred
-                      outside of request logic;
-        post_data  -- JSON object of HTTP POST data, blank if error occurred
-                      outside of request logic;
-        cookies    -- JSON object of HTTP cookies, blank if error occurred
-                      outside of request logic;
-        cookies    -- JSON object of HTTP/FastCGI/WSGI meta headers, blank if
-                      error occurred outside of request logic.
-
-    This API method returns one of the following HTTP codes:
-
-        200 OK                    -- incoming message was processed and saved
-                                     successfully
-        400 BAD REQUEST           -- missing headers or required data
-        401 UNAUTHORIZED          -- nonexistent reporter declared or invalid
-                                     signature
-        500 INTERNAL SERVER ERROR -- unexpected condition occurred
-    """
     try:
         # Get the identifier of the reporter the error is coming from.
         reporter = request.headers['X_ALPACA_REPORTER']
@@ -206,6 +166,7 @@ def report():
         # Create occurrence embedded MongoDB document.
         occurrence = ErrorOccurrence(
             date=iso8601.parse_date(request.json['date']),
+            stack_trace=request.json['stack_trace'],
             reporter=reporter,
             uri=request.json['uri'],
             get_data=sorted(request.json['get_data'].items()),
@@ -223,10 +184,12 @@ def report():
         Error.objects.get_or_create(
             hash=error_hash,
             defaults=dict(
-                summary=request.json['traceback'].split('\n')[-1],
-                traceback=request.json['traceback']
+                message=request.json['message'],
             )
         )
+    except KeyError:
+        # The message is missing required `message` key.
+        return 'Missing `message` key.\r\n', 400
     except db.OperationError:
         # This error *PROBABLY* means other concurrent request created the
         # error object in a tight spot beetween our checking and creating.

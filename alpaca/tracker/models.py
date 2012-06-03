@@ -19,8 +19,18 @@ class User(db.Document, UserMixin):
     def password_matches(self, password_plaintext):
         return bcrypt.check_password_hash(self.password, password_plaintext)
 
+class StackFrame(db.EmbeddedDocument):
+    filename = db.StringField()
+    line_number = db.IntField()
+    function = db.StringField()
+    pre_context = db.ListField(db.StringField())
+    context = db.StringField()
+    post_context = db.ListField(db.StringField())
+    variables = db.DictField()
+
 class ErrorOccurrence(db.EmbeddedDocument):
     date = db.DateTimeField(required=True)
+    stack_trace = db.ListField(db.EmbeddedDocumentField(StackFrame))
     reporter = db.StringField(required=True)
     uri = db.StringField(max_length=2000)
     get_data = db.ListField()
@@ -30,8 +40,7 @@ class ErrorOccurrence(db.EmbeddedDocument):
 
 class Error(db.Document):
     hash = db.StringField(required=True, max_length=100, unique=True)
-    summary = db.StringField(required=True)
-    traceback = db.StringField(required=True)
+    message = db.StringField(required=True)
     reporters = db.SortedListField(db.StringField())
     last_occurrence = db.DateTimeField()
     occurrence_counter = db.IntField(default=0)
@@ -43,6 +52,10 @@ class Error(db.Document):
         'collection': 'errors',
         'indexes': ['hash', 'last_occurrence',],
     }
+
+    @property
+    def summary(self):
+        return self.message.split('\n')[0].strip()
 
     @property
     def investigation_url(self):

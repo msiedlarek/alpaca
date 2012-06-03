@@ -48,7 +48,33 @@ class ApiTestCase(unittest.TestCase):
         error_date = datetime.datetime.utcnow()
         message = dict(
             error_hash='error_hash_1',
-            traceback="Some traceback",
+            message="Some traceback",
+            stack_trace=(
+                dict(
+                    filename='/var/some/file',
+                    line_number=12,
+                    function='some_function',
+                    context_pre=["a","b","c"],
+                    context="d",
+                    context_post=["e","f","g"],
+                    variables=dict(
+                        a=12,
+                        b=1
+                    )
+                ),
+                dict(
+                    filename='/var/other/file',
+                    line_number=122,
+                    function='other_function',
+                    context_pre=["a","b","c"],
+                    context="d",
+                    context_post=["e","f","g"],
+                    variables=dict(
+                        c='test',
+                        d=143.12
+                    )
+                ),
+            ),
             date=error_date.isoformat(),
             uri='',
             get_data={},
@@ -73,7 +99,7 @@ class ApiTestCase(unittest.TestCase):
         error = Error.objects.get(hash='error_hash_1')
         self.assertGreater(len(error.summary), 0)
         self.assertItemsEqual(error.reporters, ['test1'])
-        self.assertEqual(error.traceback, "Some traceback")
+        self.assertEqual(error.message, "Some traceback")
         self.assertEqual(error.last_occurrence, error_date)
         self.assertEqual(error.occurrence_counter, 1)
         self.assertEqual(len(error.occurrences), 1)
@@ -86,7 +112,33 @@ class ApiTestCase(unittest.TestCase):
         error_date = datetime.datetime.utcnow()
         message = dict(
             error_hash='error_hash_1',
-            traceback="Some traceback",
+            message="Some traceback",
+            stack_trace=(
+                dict(
+                    filename='/var/some/file',
+                    line_number=12,
+                    function='some_function',
+                    context_pre=["a","b","c"],
+                    context="d",
+                    context_post=["e","f","g"],
+                    variables=dict(
+                        a=12,
+                        b=1
+                    )
+                ),
+                dict(
+                    filename='/var/other/file',
+                    line_number=122,
+                    function='other_function',
+                    context_pre=["a","b","c"],
+                    context="d",
+                    context_post=["e","f","g"],
+                    variables=dict(
+                        c='test',
+                        d=143.12
+                    )
+                ),
+            ),
             date=error_date.isoformat(),
             uri='http://example.com/some/uri',
             get_data={
@@ -123,7 +175,7 @@ class ApiTestCase(unittest.TestCase):
         error = Error.objects.get(hash='error_hash_1')
         self.assertGreater(len(error.summary), 0)
         self.assertItemsEqual(error.reporters, ['test1'])
-        self.assertEqual(error.traceback, "Some traceback")
+        self.assertEqual(error.message, "Some traceback")
         self.assertEqual(error.last_occurrence, error_date)
         self.assertEqual(error.occurrence_counter, 1)
         self.assertEqual(len(error.occurrences), 1)
@@ -153,7 +205,33 @@ class ApiTestCase(unittest.TestCase):
         def send_occurrence():
             message = dict(
                 error_hash='error_hash_1',
-                traceback="Some traceback",
+                message="Some traceback",
+                stack_trace=(
+                    dict(
+                        filename='/var/some/file',
+                        line_number=12,
+                        function='some_function',
+                        context_pre=["a","b","c"],
+                        context="d",
+                        context_post=["e","f","g"],
+                        variables=dict(
+                            a=12,
+                            b=1
+                        )
+                    ),
+                    dict(
+                        filename='/var/other/file',
+                        line_number=122,
+                        function='other_function',
+                        context_pre=["a","b","c"],
+                        context="d",
+                        context_post=["e","f","g"],
+                        variables=dict(
+                            c='test',
+                            d=143.12
+                        )
+                    ),
+                ),
                 date=datetime.datetime.utcnow().isoformat(),
                 uri='',
                 get_data={},
@@ -187,7 +265,33 @@ class ApiTestCase(unittest.TestCase):
         def send_occurrence(reporter, api_key):
             message = dict(
                 error_hash='error_hash_1',
-                traceback="Some traceback",
+                message="Some traceback",
+                stack_trace=(
+                    dict(
+                        filename='/var/some/file',
+                        line_number=12,
+                        function='some_function',
+                        context_pre=["a","b","c"],
+                        context="d",
+                        context_post=["e","f","g"],
+                        variables=dict(
+                            a=12,
+                            b=1
+                        )
+                    ),
+                    dict(
+                        filename='/var/other/file',
+                        line_number=122,
+                        function='other_function',
+                        context_pre=["a","b","c"],
+                        context="d",
+                        context_post=["e","f","g"],
+                        variables=dict(
+                            c='test',
+                            d=143.12
+                        )
+                    ),
+                ),
                 date=datetime.datetime.utcnow().isoformat(),
                 uri='',
                 get_data={},
@@ -224,7 +328,33 @@ class ApiTestCase(unittest.TestCase):
         def send_occurrence(reporter, api_key):
             message = dict(
                 error_hash='error_hash_1',
-                traceback="Some traceback",
+                message="Some traceback",
+                stack_trace=(
+                    dict(
+                        filename='/var/some/file',
+                        line_number=12,
+                        function='some_function',
+                        context_pre=["a","b","c"],
+                        context="d",
+                        context_post=["e","f","g"],
+                        variables=dict(
+                            a=12,
+                            b=1
+                        )
+                    ),
+                    dict(
+                        filename='/var/other/file',
+                        line_number=122,
+                        function='other_function',
+                        context_pre=["a","b","c"],
+                        context="d",
+                        context_post=["e","f","g"],
+                        variables=dict(
+                            c='test',
+                            d=143.12
+                        )
+                    ),
+                ),
                 date=datetime.datetime.utcnow().isoformat(),
                 uri='',
                 get_data={},

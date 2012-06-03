@@ -24,8 +24,8 @@
             </td></tr>
         </tbody>
     </table>
-    <h2>Traceback</h2>
-    <pre style="margin-top: 10px;">{{ error.traceback }}</pre>
+    <h2>Message</h2>
+    <pre style="margin-top: 10px;">{{ error.message }}</pre>
     {% if error.occurrences|length > 1 %}
         <h2>Occurrences</h2>
     {% else %}
@@ -40,10 +40,12 @@
             </ul>
         {% endif %}
         <div class="tab-content">
-            {% for occurrence in error.occurrences|reverse %}
-                <div class="tab-pane active" id="occurrence-{{ error.occurrence_counter - loop.index0 }}">
-                    <a href="#top" class="top-link" style="float: right; line-height: 40px;">Do góry &uarr;</a>
-                    <h2 style="margin-bottom: 10px;">Occurrence #{{ error.occurrence_counter - loop.index0 }}</h2>
+            {% for occurrence in error.occurrences|reverse %}{% with occurrence_number=(error.occurrence_counter - loop.index0) %}
+                <div class="tab-pane active" id="occurrence-{{ occurrence_number }}">
+                    {% if error.occurrences|length > 1 %}
+                        <a href="#top" class="top-link" style="float: right; line-height: 40px;">Do góry &uarr;</a>
+                        <h2 style="margin-bottom: 10px;">Occurrence #{{ occurrence_number }}</h2>
+                    {% endif %}
                     <table class="table table-bordered alpaca-parameters">
                         <tbody>
                             <tr><th>URI:</th><td>
@@ -57,48 +59,93 @@
                             <tr><th>Reporter:</th><td><a href="{{ url_for('tracker.reporter', reporter=occurrence.reporter) }}">{{ occurrence.reporter }}</a></td></tr>
                         </tbody>
                     </table>
+                    <h3>Stack trace</h3>
+                    <div class="accordion" style="margin-top: 10px; margin-bottom: 20px;">
+                        {% for frame in occurrence.stack_trace -%}
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <span class="accordion-toggle" data-toggle="collapse" data-target="#alpaca-stack-trace-details-{{ occurrence_number }}-{{ loop.index0 }}">
+                                        <code>{{ frame.function }}</code> in <code>{{ frame.filename }}</code>:<code>{{ frame.line_number }}</code>
+                                    </span>
+                                </div>
+                                <div id="alpaca-stack-trace-details-{{ occurrence_number }}-{{ loop.index0 }}" class="accordion-body in collapse">
+                                    <div class="accordion-inner">
+                                        <pre style="margin-bottom: 0;" class="prettyprint">
+                                            {%- for line in frame.pre_context -%}
+                                                {{ line }}<br>
+                                            {%- endfor -%}
+                                            <div style="background-color: #dfdfcc;">{{ frame.context }}</div>
+                                            {%- for line in frame.post_context -%}
+                                                {{ line }}<br>
+                                            {%- endfor -%}
+                                        </pre>
+                                        <table class="table table-condensed" style="font-family: monospace; font-size: 12px; margin-bottom: 0;">
+                                            <tbody>
+                                                {%- for name, value in frame.variables|dictsort -%}
+                                                    <tr><th>{{ name }}</th><td>{{ value }}</td></tr>
+                                                {%- endfor -%}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        {%- endfor %}
+                    </div>
                     {% if occurrence.uri %}
                         <h3>GET data</h3>
-                        <pre style="margin-top: 10px;">
-                            {%- for name, value in occurrence.get_data -%}
-                                {{ name }} = {{ value }}<br>
-                            {%- else -%}
-                                No GET data.
-                            {%- endfor -%}
-                        </pre>
+                        <table class="table table-condensed" style="font-family: monospace; font-size: 12px;">
+                            <tbody>
+                                {%- for name, value in occurrence.get_data -%}
+                                    <tr><th>{{ name }}</th><td>{{ value }}</td></tr>
+                                {%- else -%}
+                                    <tr><td colspan="2">No GET data.</td></tr>
+                                {%- endfor -%}
+                            </tbody>
+                        </table>
                         <h3>POST data</h3>
-                        <pre style="margin-top: 10px;">
-                            {%- for name, value in occurrence.post_data -%}
-                                {{ name }} = {{ value }}<br>
-                            {%- else -%}
-                                No POST data.
-                            {%- endfor -%}
-                        </pre>
+                        <table class="table table-condensed" style="font-family: monospace; font-size: 12px;">
+                            <tbody>
+                                {%- for name, value in occurrence.post_data -%}
+                                    <tr><th>{{ name }}</th><td>{{ value }}</td></tr>
+                                {%- else -%}
+                                    <tr><td colspan="2">No POST data.</td></tr>
+                                {%- endfor -%}
+                            </tbody>
+                        </table>
                         <h3>Cookies</h3>
-                        <pre style="margin-top: 10px;">
-                            {%- for name, value in occurrence.cookies -%}
-                                {{ name }} = {{ value }}<br>
-                            {%- else -%}
-                                No cookies.
-                            {%- endfor -%}
-                        </pre>
+                        <table class="table table-condensed" style="font-family: monospace; font-size: 12px;">
+                            <tbody>
+                                {%- for name, value in occurrence.cookies -%}
+                                    <tr><th>{{ name }}</th><td>{{ value }}</td></tr>
+                                {%- else -%}
+                                    <tr><td colspan="2">No cookies.</td></tr>
+                                {%- endfor -%}
+                            </tbody>
+                        </table>
                         <h3>Headers</h3>
-                        <pre style="margin-top: 10px;">
-                            {%- for name, value in occurrence.headers -%}
-                                {{ name }} = {{ value }}<br>
-                            {%- else -%}
-                                No headers.
-                            {%- endfor -%}
-                        </pre>
+                        <table class="table table-condensed" style="font-family: monospace; font-size: 12px;">
+                            <tbody>
+                                {%- for name, value in occurrence.headers -%}
+                                    <tr><th>{{ name }}</th><td>{{ value }}</td></tr>
+                                {%- else -%}
+                                    <tr><td colspan="2">No headers.</td></tr>
+                                {%- endfor -%}
+                            </tbody>
+                        </table>
                     {% endif %}
                 </div>
-            {% endfor %}
+            {% endwith %}{% endfor %}
         </div>
     </div>
 {% endblock %}
 
 {% block body_scripts %}
     {{ super() }}
+    <script src="{{ url_for('tracker.static', filename='jquery/js/jquery-ui-1.8.20.custom.min.js') }}"></script>
+    <script src="{{ url_for('tracker.static', filename='tagit/js/tag-it.js') }}"></script>
+    <script src="{{ url_for('tracker.static', filename='bootstrap/js/bootstrap-tab.js') }}"></script>
+    <script src="{{ url_for('tracker.static', filename='bootstrap/js/bootstrap-collapse.js') }}"></script>
+    <script src="{{ url_for('tracker.static', filename='google-code-prettify/js/prettify.js') }}"></script>
     <script>
         var ALPACA_SAVE_TAGS = false;
         var ALPACA_CSRF_TOKEN = null;
@@ -134,13 +181,12 @@
             $("#tags-form input[type='submit']").remove();
             $("#tags-form > *").unwrap();
             {# Occurrence tabs #}
-            $("#occurrences .tab-content .tab-pane").removeClass("active");
-            $("#occurrences .nav li:first-child, #occurrences .tab-content .tab-pane:first-child").addClass("active");
             $("#occurrences .tab-content .tab-pane h2, #occurrences .tab-content .tab-pane a.top-link").hide();
-            $('#occurrences .nav a').click(function(event){
-                event.preventDefault();
-                $(this).tab('show');
-            });
+            $("#occurrences .nav-tabs a:first").tab("show");
+            {# Code syntax highlighting #}
+            prettyPrint();
         });
+        {# Stack trace #}
+        $(".collapse").collapse();
     </script>
 {% endblock %}

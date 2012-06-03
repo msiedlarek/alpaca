@@ -1,5 +1,5 @@
 Created: 2012-05-26                                    Mikołaj Siedlarek
-Last update: 2012-05-26                             m.siedlarek@nctz.net
+Last update: 2012-06-03                             m.siedlarek@nctz.net
 
 
                                  Alpaca
@@ -217,6 +217,34 @@ Table of Contents
       error_hash
          Client-customized hash, by which error occurrences are grouped
          in single error object, no more than 100 characters long.
+
+      exception_message
+         Human-readable summary of an error.
+
+      stack_trace
+         Stack trace for exception - list of JSON objects representing
+         stach frames with following fields:
+
+            filename
+               Absolute path to a file.
+
+            line_number
+               Number of a line in file.
+
+            function
+               Procedure name.
+
+            pre_context
+               List of several lines before the context line.
+
+            context
+               Context line.
+
+            post_context
+               List of several lines after the context line.
+
+            variables
+               Object representing local variables converted to strings.
 
       date
          ISO8601-encoded UTC date and time when given error occurred.
