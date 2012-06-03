@@ -82,7 +82,7 @@
                                         <table class="table table-condensed" style="font-family: monospace; font-size: 12px; margin-bottom: 0; table-layout: fixed;">
                                             <tbody>
                                                 {%- for name, value in frame.variables|dictsort -%}
-                                                    <tr><th>{{ name }}</th><td style="overflow: auto">{{ value }}</td></tr>
+                                                    <tr><th style="width: 250px;">{{ name }}</th><td style="overflow: auto">{{ value }}</td></tr>
                                                 {%- endfor -%}
                                             </tbody>
                                         </table>
@@ -96,7 +96,7 @@
                         <table class="table table-condensed" style="font-family: monospace; font-size: 12px; table-layout: fixed;">
                             <tbody>
                                 {%- for name, value in occurrence.get_data -%}
-                                    <tr><th>{{ name }}</th><td style="overflow: auto">{{ value }}</td></tr>
+                                    <tr><th style="width: 250px;">{{ name }}</th><td style="overflow: auto">{{ value }}</td></tr>
                                 {%- else -%}
                                     <tr><td colspan="2">No GET data.</td></tr>
                                 {%- endfor -%}
@@ -106,7 +106,7 @@
                         <table class="table table-condensed" style="font-family: monospace; font-size: 12px; table-layout: fixed;">
                             <tbody>
                                 {%- for name, value in occurrence.post_data -%}
-                                    <tr><th>{{ name }}</th><td style="overflow: auto">{{ value }}</td></tr>
+                                    <tr><th style="width: 250px;">{{ name }}</th><td style="overflow: auto">{{ value }}</td></tr>
                                 {%- else -%}
                                     <tr><td colspan="2">No POST data.</td></tr>
                                 {%- endfor -%}
@@ -116,7 +116,7 @@
                         <table class="table table-condensed" style="font-family: monospace; font-size: 12px; table-layout: fixed;">
                             <tbody>
                                 {%- for name, value in occurrence.cookies -%}
-                                    <tr><th>{{ name }}</th><td style="overflow: auto">{{ value }}</td></tr>
+                                    <tr><th style="width: 250px;">{{ name }}</th><td style="overflow: auto">{{ value }}</td></tr>
                                 {%- else -%}
                                     <tr><td colspan="2">No cookies.</td></tr>
                                 {%- endfor -%}
@@ -126,7 +126,7 @@
                         <table class="table table-condensed" style="font-family: monospace; font-size: 12px; table-layout: fixed;">
                             <tbody>
                                 {%- for name, value in occurrence.headers -%}
-                                    <tr><th>{{ name }}</th><td style="overflow: auto">{{ value }}</td></tr>
+                                    <tr><th style="width: 250px;">{{ name }}</th><td style="overflow: auto">{{ value }}</td></tr>
                                 {%- else -%}
                                     <tr><td colspan="2">No headers.</td></tr>
                                 {%- endfor -%}
