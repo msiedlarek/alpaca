@@ -39,9 +39,10 @@ def create_application(configuration_module=DEFAULT_CONFIGURATION_MODULE,
     return application
 
 def setup_extensions(application):
-    from alpaca.ext import bcrypt, login_manager
+    from alpaca.ext import bcrypt, login_manager, assets
     bcrypt.init_app(application)
     login_manager.setup_app(application)
+    assets.init_app(application)
 
 def database_connect(application):
     if application.config['TESTING']:

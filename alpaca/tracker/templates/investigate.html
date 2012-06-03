@@ -141,11 +141,6 @@
 
 {% block body_scripts %}
     {{ super() }}
-    <script src="{{ url_for('tracker.static', filename='jquery/js/jquery-ui-1.8.20.custom.min.js') }}"></script>
-    <script src="{{ url_for('tracker.static', filename='tagit/js/tag-it.js') }}"></script>
-    <script src="{{ url_for('tracker.static', filename='bootstrap/js/bootstrap-tab.js') }}"></script>
-    <script src="{{ url_for('tracker.static', filename='bootstrap/js/bootstrap-collapse.js') }}"></script>
-    <script src="{{ url_for('tracker.static', filename='google-code-prettify/js/prettify.js') }}"></script>
     <script>
         var ALPACA_SAVE_TAGS = false;
         var ALPACA_CSRF_TOKEN = null;

@@ -15,5 +15,6 @@ blueprint = flask.Blueprint(
 def load_user(user_id):
     return User.objects.get(id=user_id)
 
+import alpaca.tracker.assets
 import alpaca.tracker.views
 import alpaca.tracker.context_processors

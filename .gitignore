@@ -2,3 +2,5 @@
 alpaca/configuration/local.py
 environment
 mongodb
+alpaca/tracker/static/compressed
+.webassets-cache

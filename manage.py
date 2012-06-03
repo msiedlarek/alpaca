@@ -2,10 +2,13 @@
 
 import sys
 from flaskext.script import Manager, prompt_pass
+from flask.ext.assets import ManageAssets
 from alpaca import create_application
+from alpaca.ext import assets
 
 application = create_application()
 manager = Manager(application)
+manager.add_command("assets", ManageAssets(assets))
 
 @manager.command
 @manager.option('username')

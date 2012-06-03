@@ -5,11 +5,9 @@
             <meta charset="utf-8">
         {%- endblock %}
         {% block body_stylesheets -%}
-            <link href="{{ url_for('tracker.static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-            <link href="{{ url_for('tracker.static', filename='jquery/css/ui-lightness/jquery-ui-1.8.20.custom.css') }}" rel="stylesheet">
-            <link href="{{ url_for('tracker.static', filename='tagit/css/jquery.tagit.css') }}" rel="stylesheet">
-            <link href="{{ url_for('tracker.static', filename='google-code-prettify/css/prettify.css') }}" rel="stylesheet">
-            <link href="{{ url_for('tracker.static', filename='alpaca/css/base.css') }}" rel="stylesheet">
+            {%- assets "tracker_css" -%}
+                <link href="{{ ASSET_URL }}" rel="stylesheet">
+            {%- endassets -%}
         {%- endblock %}
         <title>{% block head_title -%}Alpaca{%- endblock %}</title>
     </head>
@@ -62,8 +60,9 @@
             </div>
         </div>
         {% block body_scripts %}
-            <script src="{{ url_for('tracker.static', filename='jquery/js/jquery-1.7.2.min.js') }}"></script>
-            <script src="{{ url_for('tracker.static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+            {%- assets "tracker_js" -%}
+                <script src="{{ ASSET_URL }}"></script>
+            {%- endassets -%}
         {% endblock %}
     </body>
 </html>
