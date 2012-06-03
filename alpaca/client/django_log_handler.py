@@ -53,7 +53,6 @@ def send_alpaca_report(url, reporter, api_key, message, ca_bundle=None):
             timeout=5,
             verify=ca_bundle
         )
-        print message
         if response.status_code != 200:
             raise RuntimeError("Alpaca responded with HTTP %d: %s" % (
                 response.status_code,
