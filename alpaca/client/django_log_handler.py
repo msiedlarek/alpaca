@@ -102,23 +102,13 @@ def alpaca_report(exc_info=None, request=None):
             headers=dict(),
         )
         if request is not None:
-            cookies = dict((
-                (str(k), pprint.pformat(v))
-                for k, v
-                in request.COOKIES.iteritems()
-            ))
-            meta = dict((
-                (str(k), pprint.pformat(v))
-                for k, v
-                in request.META.iteritems()
-            ))
             message.update(dict(
                 uri=request.build_absolute_uri(),
                 get_data=request.GET.dict(),
                 post_data= \
                     exception_reporter_filter.get_post_parameters(request),
-                cookies=cookies,
-                headers=meta,
+                cookies=request.COOKIES,
+                headers=_serialize_object_dict(request.META.iteritems()),
             ))
         async_send_alpaca_report(
             settings.ALPACA_URL,
@@ -205,12 +195,20 @@ def _serialize_stack(tb):
                 pre_context=pre_context,
                 context=context_line,
                 post_context=post_context,
-                variables=dict((
-                    (str(k), pprint.pformat(v))
-                    for k, v
-                    in exception_reporter_filter\
-                       .get_traceback_frame_variables(None, tb.tb_frame)
-                ))
+                variables=_serialize_object_dict(
+                    exception_reporter_filter \
+                        .get_traceback_frame_variables(None, tb.tb_frame)
+                )
             ))
         tb = tb.tb_next
     return frames
+
+def _serialize_object_dict(iterable_of_twotuples):
+    result = dict()
+    for key, value in iterable_of_twotuples:
+        try:
+            formatted_value = pprint.pformat(value)
+        except Exception as exception:
+            formatted_value = "Formatting error: %s" % str(exception)
+        result[key] = formatted_value
+    return result
