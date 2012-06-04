@@ -60,7 +60,9 @@ def send_alpaca_report(url, reporter, api_key, message, ca_bundle=None):
             ))
     except:
         logger.error("Error while sending report to Alpaca: %s"
-                     % '\n'.join(traceback.format_exception_only()))
+                     % '\n'.join(traceback.format_exception_only(
+                        *sys.exc_info()[:2]
+                     )).strip())
 
 def async_send_alpaca_report(url, reporter, api_key, message, ca_bundle=None):
     threading.Thread(target=send_alpaca_report, args=(
@@ -127,7 +129,9 @@ def alpaca_report(exc_info=None, request=None):
         )
     except Exception:
         logger.error("Error while sending report to Alpaca: %s"
-                     % '\n'.join(traceback.format_exception_only()))
+                     % '\n'.join(traceback.format_exception_only(
+                        *sys.exc_info()[:2]
+                     )).strip())
 
 class AlpacaLogHandler(logging.Handler):
     def emit(self, record):
@@ -139,7 +143,9 @@ class AlpacaLogHandler(logging.Handler):
             alpaca_report(record.exc_info, request)
         except Exception:
             logger.error("Error while sending report to Alpaca: %s"
-                         % '\n'.join(traceback.format_exception_only()))
+                         % '\n'.join(traceback.format_exception_only(
+                            *sys.exc_info()[:2]
+                         )).strip())
 
 def _get_lines_from_file(filename, lineno, context_lines, loader=None,
                          module_name=None):
