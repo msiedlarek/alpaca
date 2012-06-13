@@ -24,7 +24,7 @@ from django.conf import settings
 from django.utils import simplejson
 from django.views.debug import SafeExceptionReporterFilter
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('alpaca')
 
 class ForcedSafeExceptionReporterFilter(SafeExceptionReporterFilter):
     def is_active(self, request):
