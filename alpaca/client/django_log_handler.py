@@ -125,9 +125,9 @@ def alpaca_report(exc_info=None, request=None):
 
 class AlpacaLogHandler(logging.Handler):
     def emit(self, record):
-        try:
+        if hasattr(record, 'request'):
             request = record.request
-        except AttributeError:
+        else:
             request = None
         try:
             alpaca_report(record.exc_info, request)
