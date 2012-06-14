@@ -73,23 +73,31 @@ def async_send_alpaca_report(url, reporter, api_key, message, ca_bundle=None):
         ca_bundle
     )).start()
 
-def alpaca_report(exc_info=None, request=None):
+def alpaca_report(message, exc_info=None, request=None):
     try:
         if not settings.ALPACA_ENABLED:
             return
         if exc_info is None:
             exc_info = sys.exc_info()
-        stack_trace = _serialize_stack(exc_info[2])
-        lowest_frame = stack_trace[-1]
-        error_hash = hashlib.md5(
-            ':'.join((
-                lowest_frame['filename'],
-                lowest_frame['function'],
-                lowest_frame['context']
-            ))
-        ).hexdigest()
-        exception_message = \
-            ''.join(traceback.format_exception_only(*exc_info[:2])).strip()
+        if exc_info != (None, None, None):
+            exception_message = (
+                ''.join(traceback.format_exception_only(*exc_info[:2])).strip()
+            )
+            stack_trace = _serialize_stack(exc_info[2])
+            lowest_frame = stack_trace[-1]
+            error_hash = hashlib.md5(
+                ':'.join((
+                    lowest_frame['filename'],
+                    lowest_frame['function'],
+                    lowest_frame['context']
+                ))
+            ).hexdigest()
+        else:
+            exception_message = message
+            stack_trace = []
+            error_hash = hashlib.md5(
+                message
+            ).hexdigest()
         message = dict(
             error_hash=error_hash,
             message=exception_message,
@@ -125,12 +133,20 @@ def alpaca_report(exc_info=None, request=None):
 
 class AlpacaLogHandler(logging.Handler):
     def emit(self, record):
-        if hasattr(record, 'request'):
-            request = record.request
-        else:
-            request = None
         try:
-            alpaca_report(record.exc_info, request)
+            if hasattr(record, 'request'):
+                request = record.request
+            else:
+                request = None
+            if hasattr(record, 'exc_info'):
+                exc_info = record.exc_info
+            else:
+                exc_info = None
+            try:
+                message = record.msg % record.args
+            except:
+                message = '[formatting_error] ' + record.msg
+            alpaca_report(message, exc_info, request)
         except Exception:
             logger.error("Error while sending report to Alpaca: %s"
                          % '\n'.join(traceback.format_exception_only(

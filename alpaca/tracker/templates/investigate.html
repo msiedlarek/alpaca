@@ -59,38 +59,40 @@
                             <tr><th>Reporter:</th><td><a href="{{ url_for('tracker.reporter', reporter=occurrence.reporter) }}">{{ occurrence.reporter }}</a></td></tr>
                         </tbody>
                     </table>
-                    <h3>Stack trace</h3>
-                    <div class="accordion" style="margin-top: 10px; margin-bottom: 20px;">
-                        {% for frame in occurrence.stack_trace -%}
-                            <div class="accordion-group">
-                                <div class="accordion-heading">
-                                    <span class="accordion-toggle" data-toggle="collapse" data-target="#alpaca-stack-trace-details-{{ occurrence_number }}-{{ loop.index0 }}">
-                                        <code>{{ frame.function }}</code> in <code>{{ frame.filename }}</code>:<code>{{ frame.line_number }}</code>
-                                    </span>
-                                </div>
-                                <div id="alpaca-stack-trace-details-{{ occurrence_number }}-{{ loop.index0 }}" class="accordion-body in collapse">
-                                    <div class="accordion-inner">
-                                        <pre style="margin-bottom: 0;" class="prettyprint">
-                                            {%- for line in frame.pre_context -%}
-                                                {{ line }}<br>
-                                            {%- endfor -%}
-                                            <div style="background-color: #dfdfcc;">{{ frame.context }}</div>
-                                            {%- for line in frame.post_context -%}
-                                                {{ line }}<br>
-                                            {%- endfor -%}
-                                        </pre>
-                                        <table class="table table-condensed" style="font-family: monospace; font-size: 12px; margin-bottom: 0; table-layout: fixed;">
-                                            <tbody>
-                                                {%- for name, value in frame.variables|dictsort -%}
-                                                    <tr><th style="width: 250px;">{{ name }}</th><td style="overflow: auto">{{ value }}</td></tr>
+                    {% if occurrence.stack_trace %}
+                        <h3>Stack trace</h3>
+                        <div class="accordion" style="margin-top: 10px; margin-bottom: 20px;">
+                            {% for frame in occurrence.stack_trace -%}
+                                <div class="accordion-group">
+                                    <div class="accordion-heading">
+                                        <span class="accordion-toggle" data-toggle="collapse" data-target="#alpaca-stack-trace-details-{{ occurrence_number }}-{{ loop.index0 }}">
+                                            <code>{{ frame.function }}</code> in <code>{{ frame.filename }}</code>:<code>{{ frame.line_number }}</code>
+                                        </span>
+                                    </div>
+                                    <div id="alpaca-stack-trace-details-{{ occurrence_number }}-{{ loop.index0 }}" class="accordion-body in collapse">
+                                        <div class="accordion-inner">
+                                            <pre style="margin-bottom: 0;" class="prettyprint">
+                                                {%- for line in frame.pre_context -%}
+                                                    {{ line }}<br>
                                                 {%- endfor -%}
-                                            </tbody>
-                                        </table>
+                                                <div style="background-color: #dfdfcc;">{{ frame.context }}</div>
+                                                {%- for line in frame.post_context -%}
+                                                    {{ line }}<br>
+                                                {%- endfor -%}
+                                            </pre>
+                                            <table class="table table-condensed" style="font-family: monospace; font-size: 12px; margin-bottom: 0; table-layout: fixed;">
+                                                <tbody>
+                                                    {%- for name, value in frame.variables|dictsort -%}
+                                                        <tr><th style="width: 250px;">{{ name }}</th><td style="overflow: auto">{{ value }}</td></tr>
+                                                    {%- endfor -%}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        {%- endfor %}
-                    </div>
+                            {%- endfor %}
+                        </div>
+                    {% endif %}
                     {% if occurrence.uri %}
                         <h3>GET data</h3>
                         <table class="table table-condensed" style="font-family: monospace; font-size: 12px; table-layout: fixed;">
