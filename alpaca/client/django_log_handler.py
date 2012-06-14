@@ -91,34 +91,68 @@ def async_send_alpaca_report(url, reporter, api_key, message, ca_bundle=None):
         ca_bundle
     )).start()
 
-def alpaca_report(message=None, exc_info=None, request=None):
+def alpaca_report(log_record=None, request=None):
     try:
         if not settings.ALPACA_ENABLED:
             return
-        if exc_info is None:
+        if (log_record is not None
+                and hasattr(log_record, 'exc_info')
+                and log_record.exc_info != (None, None, None)):
+            exc_info = log_record.exc_info
+        else:
             exc_info = sys.exc_info()
-        if exc_info != (None, None, None):
-            exception_message = (
+        if exc_info is not None and exc_info != (None, None, None):
+            message = (
                 ''.join(traceback.format_exception_only(*exc_info[:2])).strip()
             )
             stack_trace = _serialize_stack(exc_info[2])
             lowest_frame = stack_trace[-1]
             error_hash = hashlib.md5(
                 ':'.join((
+                    str(exc_info[0]),
                     lowest_frame['filename'],
                     lowest_frame['function'],
                     lowest_frame['context']
                 ))
             ).hexdigest()
-        else:
-            exception_message = message
-            stack_trace = []
+        elif log_record is not None:
+            try:
+                if isinstance(log_record.msg, basestring):
+                    message = log_record.msg % log_record.args
+                else:
+                    message = pprint.pformat(log_record.msg)
+            except Exception as exception:
+                message = "Formatting error: %s" % str(exception)
+            pre_context_lineno, pre_context, context_line, post_context = \
+                _get_lines_from_file(
+                    log_record.pathname,
+                    log_record.lineno,
+                    7,
+                    None,
+                    log_record.module
+                )
+            if pre_context_lineno is not None:
+                stack_trace = [dict(
+                    filename=log_record.pathname,
+                    line_number=log_record.lineno,
+                    function=log_record.funcName,
+                    pre_context=pre_context,
+                    context=context_line,
+                    post_context=post_context,
+                    variables=dict()
+                )]
+            else:
+                stack_trace = []
             error_hash = hashlib.md5(
-                message
+                ':'.join((
+                    log_record.pathname,
+                    log_record.funcName,
+                    context_line
+                ))
             ).hexdigest()
         message = dict(
             error_hash=error_hash,
-            message=exception_message,
+            message=message,
             stack_trace=stack_trace,
             date=datetime.datetime.utcnow().isoformat(),
             uri=None,
@@ -144,7 +178,7 @@ def alpaca_report(message=None, exc_info=None, request=None):
             ca_bundle=settings.ALPACA_CA_BUNDLE,
         )
     except Exception:
-        logger.error("Error while sending report to Alpaca: %s"
+        logger.error("Error while preparing report for Alpaca: %s"
                      % '\n'.join(traceback.format_exception_only(
                         *sys.exc_info()[:2]
                      )).strip())
@@ -156,17 +190,9 @@ class AlpacaLogHandler(logging.Handler):
                 request = record.request
             else:
                 request = None
-            if hasattr(record, 'exc_info'):
-                exc_info = record.exc_info
-            else:
-                exc_info = None
-            try:
-                message = record.msg % record.args
-            except:
-                message = '[formatting_error] ' + record.msg
-            alpaca_report(message, exc_info, request)
+            alpaca_report(record, request)
         except Exception:
-            logger.error("Error while sending report to Alpaca: %s"
+            logger.error("Error handling record in Alpaca logger: %s"
                          % '\n'.join(traceback.format_exception_only(
                             *sys.exc_info()[:2]
                          )).strip())
@@ -186,6 +212,7 @@ def _get_lines_from_file(filename, lineno, context_lines, loader=None,
         try:
             with open(filename, 'rb') as fp:
                 source = fp.readlines()
+            lineno -= 1
         except (OSError, IOError):
             pass
     if source is None:
