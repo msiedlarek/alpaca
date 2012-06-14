@@ -91,7 +91,7 @@ def async_send_alpaca_report(url, reporter, api_key, message, ca_bundle=None):
         ca_bundle
     )).start()
 
-def alpaca_report(message, exc_info=None, request=None):
+def alpaca_report(message=None, exc_info=None, request=None):
     try:
         if not settings.ALPACA_ENABLED:
             return
