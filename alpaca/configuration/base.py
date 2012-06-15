@@ -38,3 +38,6 @@ ASSETS_VERSIONS = 'hash:32'
 
 # Log file
 LOG_FILE = None
+
+# Timezone for dates to display in
+BABEL_DEFAULT_TIMEZONE = 'UTC'

@@ -1,7 +1,7 @@
 import flask
 import mongoengine as db
 from flaskext.login import UserMixin
-from alpaca.ext import bcrypt
+from alpaca.ext import bcrypt, babel
 
 class User(db.Document, UserMixin):
 

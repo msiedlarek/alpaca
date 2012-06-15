@@ -12,7 +12,7 @@
                     <a href="{{ url_for('tracker.reporter', reporter=reporter) }}">{{ reporter }}</a>{% if not loop.last %}, {% endif %}
                 {%- endfor -%}
             </td></tr>
-            <tr><th>Last occurrence:</th><td>{{ error.last_occurrence }}</td></tr>
+            <tr><th>Last occurrence:</th><td>{{ error.last_occurrence|datetimeformat('y-MM-d H:mm:ss') }} {% if timezone != 'UTC' %}<span style="color: #aaa;">(converted from UTC to {{ timezone }})</span>{% endif %}</td></tr>
             <tr><th>Occurrences total:</th><td>{{ error.occurrence_counter }}</td></tr>
             <tr><th>Tags:</th><td>
                 <form action="{{ url_for('tracker.set_tags', error_id=error.id) }}" method="post" style="margin-bottom: 0;" id="tags-form">
@@ -55,7 +55,7 @@
                                     <span style="color: #aaa;">(not a request)</span>
                                 {%- endif -%}
                             </td></tr>
-                            <tr><th>Date:</th><td>{{ occurrence.date }}</td></tr>
+                            <tr><th>Date:</th><td>{{ occurrence.date|datetimeformat('y-MM-d H:mm:ss') }} {% if timezone != 'UTC' %}<span style="color: #aaa;">(converted from UTC to {{ timezone }})</span>{% endif %}</td></tr>
                             <tr><th>Reporter:</th><td><a href="{{ url_for('tracker.reporter', reporter=occurrence.reporter) }}">{{ occurrence.reporter }}</a></td></tr>
                         </tbody>
                     </table>

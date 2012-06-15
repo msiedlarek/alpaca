@@ -17,7 +17,7 @@
                         <span class="label">{{ tag }}</span>
                     {% endfor %}
                 </td>
-                <td>{{ error.last_occurrence }}</td>
+                <td>{{ error.last_occurrence|datetimeformat('y-MM-d H:mm:ss') }}</td>
                 <td>
                     <span class="badge {% if error.occurrence_counter >= 10 -%}
                         badge-important
@@ -40,3 +40,6 @@
         {% endfor %}
     </tbody>
 </table>
+{% if timezone != 'UTC' %}<p style="border-top: 1px solid #eee; padding-top:
+5px; text-align: center; color: #aaa;">All dates
+are converted from UTC to {{ timezone }}.</p>{% endif %}
