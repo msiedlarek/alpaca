@@ -28,14 +28,17 @@ def dashboard():
 @blueprint.route('/reporter/<reporter>')
 @login_required
 def reporter(reporter):
-    errors = Error.objects(
-        reporters=reporter
-    ).only(
-        'message',
-        'last_occurrence',
-        'occurrence_counter',
-        'tags',
-    ).order_by('-last_occurrence')[:100]
+    try:
+        errors = Error.objects(
+            reporters=reporter
+        ).only(
+            'message',
+            'last_occurrence',
+            'occurrence_counter',
+            'tags',
+        ).order_by('-last_occurrence')[:100]
+    except db.ValidationError:
+        flask.abort(404)
     return flask.render_template('reporter.html',
         reporter=reporter,
         errors=errors,
@@ -46,7 +49,7 @@ def reporter(reporter):
 def investigate(error_id):
     try:
         error = Error.objects.get(id=error_id)
-    except Error.DoesNotExist:
+    except (db.ValidationError, Error.DoesNotExist):
         flask.abort(404)
     tags_form = forms.TagsForm(tags=', '.join(error.tags))
     return flask.render_template('investigate.html',
@@ -59,7 +62,7 @@ def investigate(error_id):
 def set_tags(error_id):
     try:
         error = Error.objects.get(id=error_id)
-    except Error.DoesNotExist:
+    except (db.ValidationError, Error.DoesNotExist):
         flask.abort(404)
     form = forms.TagsForm(request.form)
     if form.validate_on_submit():
