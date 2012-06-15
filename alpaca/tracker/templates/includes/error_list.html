@@ -40,6 +40,8 @@
         {% endfor %}
     </tbody>
 </table>
-{% if timezone != 'UTC' %}<p style="border-top: 1px solid #eee; padding-top:
-5px; text-align: center; color: #aaa;">All dates
-are converted from UTC to {{ timezone }}.</p>{% endif %}
+{% if timezone != 'UTC' %}
+    <p style="border-top: 1px solid #eee; padding-top: 5px; text-align: center; color: #aaa;">
+        All dates are converted from UTC to {{ timezone }}.
+    </p>
+{% endif %}
