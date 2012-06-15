@@ -220,3 +220,7 @@ def report():
     )
     # Return HTTP 200 OK response.
     return 'OK\r\n'
+
+@blueprint.errorhandler(404)
+def error_404(error):
+    return flask.render_template('error/404.html'), 404

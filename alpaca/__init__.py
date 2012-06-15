@@ -31,6 +31,8 @@ def create_application(configuration_module=DEFAULT_CONFIGURATION_MODULE,
         blueprint_module = importlib.import_module(module_name)
         application.register_blueprint(blueprint_module.blueprint,
                                        url_prefix=url_prefix)
+    # Register error handler
+    register_error_handler(application)
     # Set up extensions
     setup_extensions(application)
     # Connect to MongoDB databases
@@ -55,3 +57,8 @@ def database_connect(application):
             'default',
             **application.config['MONGODB_CONNECTIONS']['default']
         )
+
+def register_error_handler(application):
+    def error_handler(error):
+        return flask.render_template('error/500.html'), 500
+    application.error_handler_spec[None][500] = error_handler
