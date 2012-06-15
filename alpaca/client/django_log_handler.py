@@ -150,6 +150,9 @@ def alpaca_report(log_record=None, request=None):
                     context_line
                 ))
             ).hexdigest()
+        else:
+            raise RuntimeError("Neither log record nor exception information"
+                               " was supplied.")
         message = dict(
             error_hash=error_hash,
             message=message,
