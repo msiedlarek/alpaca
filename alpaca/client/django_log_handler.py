@@ -126,7 +126,7 @@ def alpaca_report(log_record=None, request=None):
             pre_context_lineno, pre_context, context_line, post_context = \
                 _get_lines_from_file(
                     log_record.pathname,
-                    log_record.lineno,
+                    log_record.lineno - 1,
                     7,
                     None,
                     log_record.module
@@ -230,7 +230,7 @@ def _get_lines_from_file(filename, lineno, context_lines, loader=None,
     upper_bound = lineno + context_lines
     pre_context = [line.strip('\n') for line in source[lower_bound:lineno]]
     context_line = source[lineno].strip('\n')
-    post_context = [line.strip('\n') for line in source[lineno+1:upper_bound]]
+    post_context = [line.strip('\n') for line in source[lineno + 1:upper_bound]]
     return lower_bound, pre_context, context_line, post_context
 
 def _serialize_stack(tb):
