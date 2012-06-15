@@ -7,8 +7,8 @@ body {
 }
 
 #occurrences .nav a {
-    padding-left: 5px;
-    padding-right: 5px;
+    padding: 2px 5px 2px 5px;
+    font-size: 9px;
 }
 
 table.alpaca-parameters th {
