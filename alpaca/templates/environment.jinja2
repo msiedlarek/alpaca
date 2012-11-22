@@ -1,0 +1,37 @@
+{% extends "alpaca:templates/base.jinja2" %}
+{% from "alpaca:templates/macros/hero_unit.jinja2" import hero_unit %}
+{% set active_environment_id = environment.id %}
+
+{% block head_title %}{{ environment.name }} - {{ super() }}{% endblock %}
+
+{% block body_content %}
+    {% if problems %}
+        <table class="table table-striped alpaca-problems">
+            <thead>
+                <tr>
+                    <th>{% trans %}ID{% endtrans %}</th>
+                    <th>{% trans %}Description{% endtrans %}</th>
+                    <th>{% trans %}Tags{% endtrans %}</th>
+                    <th>{% trans %}Last occurrence{% endtrans %}</th>
+                    <th>{% trans %}Occurrences{% endtrans %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for problem in problems -%}
+                    <tr>
+                        <td><a href="{{ problem.url }}"><span class="badge"># {{ problem.id }}</a></span></td>
+                        <td><code>{{ problem.description }}</code></td>
+                        <td>
+                            {% for tag in problem.tags %}
+                                <span class="label">{{ tag }}</span>
+                            {% endfor %}
+                        <td>{{ problem.last_occurrence }}</td>
+                        <td><span class="badge badge-important">{{ problem.occurrence_count }}</span></td>
+                    </tr>
+                {%- endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {{ hero_unit(_("No bugs for you!"), _("Have an alpaca instead.")) }}
+    {% endif %}
+{% endblock %}

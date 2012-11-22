@@ -1,0 +1,90 @@
+.container {
+    width: 1200px !important;
+}
+
+#brand {
+    margin-left: 1px;
+    background: url('../img/alpaca.png') left center no-repeat;
+    padding-left: 30px;
+}
+
+#sign-out-form {
+    padding-left: 15px;
+    padding-top: 2px;
+}
+
+#content {
+    margin-top: 60px;
+}
+
+table .badge,
+table .label {
+    line-height: 20px;
+    vertical-align: top;
+}
+
+table.alpaca-problems a:hover {
+    text-decoration: none;
+}
+
+table.alpaca-problems a:hover .badge {
+    background-color: #777;
+}
+
+.hero-unit.message {
+    background-image: url('../img/alpaca_message.png');
+    background-position: 60px center;
+    background-repeat: no-repeat;
+    padding-left: 220px;
+}
+
+.alpaca-detail-table th {
+    width: 25%;
+}
+
+.alpaca-detail-table pre {
+    margin-bottom: 0;
+}
+
+table.alpaca-environment-data,
+table.alpaca-stack-trace-variables {
+    font-size: 12px;
+    font-family: monospace;
+}
+
+.alpaca-stack-trace .accordion-heading a,
+.alpaca-stack-trace .accordion-heading a:hover {
+    color: #000;
+    text-decoration: none;
+    outline: 0;
+}
+
+.alpaca-stack-trace pre .alpaca-context-line {
+    background: #ccc;
+}
+
+.nav-tabs.alpaca-occurrences a {
+    font-size: 12px;
+    padding: 5px 4px 5px 4px;
+}
+
+#occurrence-tags,
+#occurrence-tags input,
+#occurrence-tags ul {
+    margin: 0;
+    font-size: 12px;
+}
+
+#occurrence-tags input.ui-autocomplete-input {
+    padding: 0 5px 0 5px;
+}
+
+ul.tagit {
+    border: 0;
+    background: none;
+}
+
+td form {
+    margin-bottom: 0;
+    display: inline;
+}

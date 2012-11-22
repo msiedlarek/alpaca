@@ -1,6 +1,8 @@
+*.egg-info
 *.py[co]
-alpaca/configuration/local.py
-environment
-mongodb
-alpaca/tracker/static/compressed
+.DS_Store
 .webassets-cache
+alpaca/static/compressed
+*.db
+*.sqlite
+*.sqlite3

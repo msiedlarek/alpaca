@@ -1,0 +1,124 @@
+{% extends "alpaca:templates/base.jinja2" %}
+{% from "alpaca:templates/macros/horizontal_form_field.jinja2" import horizontal_form_field %}
+
+{% block head_title %}{% trans %}Configuration{% endtrans %} - {{ super() }}{% endblock %}
+
+{% block body_content %}
+    <h2>{% trans %}Permissions{% endtrans %}</h2>
+    <div class="">
+        <form action="" method="post">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>{% trans %}User{% endtrans %}</th>
+                        <th>{% trans %}Is administrator{% endtrans %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.email }}</td>
+                            <td><input type="checkbox"
+                                {%- if user.role_administrator %} checked="true" {% endif -%}
+                                {%- if user.id != user_id %} name="role_administrator-{{ user.id }}" {% else %} disabled="true" {% endif -%}
+                            ></td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="2" style="text-align: center; color: #aaa;">
+                            {% trans %}No users yet.{% endtrans %}
+                        </td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="form-actions">
+                <button type="submit" name="change-permissions-submit" class="btn btn-primary">{% trans %}Save permissions{% endtrans %}</button>
+            </div>
+        </form>
+    </div>
+    <h2>Users</h2>
+    <div class="">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>{% trans %}E-mail{% endtrans %}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <form action="" method="post">
+                                {{ user.reset_password_form.csrf_token }}
+                                {{ user.reset_password_form.user_id }}
+                                    <button type="submit" name="reset-user-password-submit" class="btn btn-mini">{% trans %}Reset password{% endtrans %}</button>
+                                </div>
+                            </form>
+                            {% if user.id != user_id %}
+                                <form action="" method="post">
+                                    {{ user.delete_form.csrf_token }}
+                                    {{ user.delete_form.user_id }}
+                                        <button type="submit" name="delete-user-submit" class="btn btn-danger btn-mini">{% trans %}Delete{% endtrans %}</button>
+                                    </div>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="2" style="text-align: center; color: #aaa;">
+                        {% trans %}No users yet.{% endtrans %}
+                    </td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <form id="add-user" action="" method="post" class="well form-horizontal">
+            {{ add_user_form.csrf_token }}
+            {{ horizontal_form_field(add_user_form.email) }}
+            <div class="form-actions" style="padding-bottom: 0; margin-bottom: 0;">
+                <button type="submit" name="add-user-submit" class="btn btn-primary"><i class="icon-white icon-plus-sign"></i> {% trans %}Add user{% endtrans %}</button>
+            </div>
+        </form>
+    </div>
+    <h2>Environments</h2>
+    <div class="">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>{% trans %}Name{% endtrans %}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for environment in environments %}
+                    <tr>
+                        <td>{{ environment.name }}</td>
+                        <td>
+                            <form action="" method="post">
+                                {{ environment.regenerate_api_key_form.csrf_token }}
+                                {{ environment.regenerate_api_key_form.environment_id }}
+                                <button type="submit" name="regenerate-environment-api-key-submit" class="btn btn-mini">{% trans %}Regenerate API key{% endtrans %}</button>
+                            </form>
+                            <form action="" method="post">
+                                {{ environment.delete_form.csrf_token }}
+                                {{ environment.delete_form.environment_id }}
+                                <button type="submit" name="delete-environment-submit" class="btn btn-danger btn-mini">{% trans %}Delete{% endtrans %}</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="2" style="text-align: center; color: #aaa;">
+                        {% trans %}No environments yet.{% endtrans %}
+                    </td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <form id="add-environment" action="" method="post" class="well form-horizontal">
+            {{ add_environment_form.csrf_token }}
+            {{ horizontal_form_field(add_environment_form.name) }}
+            <div class="form-actions" style="padding-bottom: 0; margin-bottom: 0;">
+                <button type="submit" name="add-environment-submit" class="btn btn-primary"><i class="icon-white icon-plus-sign"></i> {% trans %}Add environment{% endtrans %}</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

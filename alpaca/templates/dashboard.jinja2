@@ -1,0 +1,6 @@
+{% extends "alpaca:templates/base.jinja2" %}
+{% from "alpaca:templates/macros/hero_unit.jinja2" import hero_unit %}
+
+{% block body_content %}
+    {{ hero_unit(_("Welcome to Alpaca!"), "") }}
+{% endblock %}

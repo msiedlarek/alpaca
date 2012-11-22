@@ -1,0 +1,16 @@
+{% extends "alpaca:templates/base.jinja2" %}
+{% from "alpaca:templates/macros/horizontal_form_field.jinja2" import horizontal_form_field %}
+
+{% block head_title %}{% trans %}Account{% endtrans %} - {{ super() }}{% endblock %}
+
+{% block body_content %}
+    <h2>{% trans %}Change password{% endtrans %}</h2>
+    <form action="" method="post" class="well form-horizontal">
+        {{ change_password_form.csrf_token }}
+        {{ horizontal_form_field(change_password_form.password) }}
+        {{ horizontal_form_field(change_password_form.password_repeated) }}
+        <div class="form-actions" style="padding-bottom: 0; margin-bottom: 0;">
+            <button type="submit" class="btn btn-primary">{% trans %}Change password{% endtrans %}</button>
+        </div>
+    </form>
+{% endblock %}

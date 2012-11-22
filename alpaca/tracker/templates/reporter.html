@@ -1,8 +1,0 @@
-{% extends "base.html" %}
-{% set active_reporter = reporter %}
-
-{% block head_title -%}{{ reporter }} - {{ super() }}{%- endblock %}
-
-{% block body_content %}
-    {% include "includes/error_list.html" %}
-{% endblock %}
