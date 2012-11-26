@@ -8,6 +8,6 @@ Getting Started
 
 - $venv/bin/python setup.py develop
 
-- $venv/bin/populate_alpaca development.ini
+- $venv/bin/alpaca_initialize_database development.ini
 
-- $venv/bin/pserve development.ini
+- $venv/bin/pserve development.ini --reload
