@@ -44,7 +44,7 @@ class Problem(ModelBase):
         unique=True,
         index=True
     )
-    description = sql.Column(sql.Unicode(length=100), nullable=False)
+    description = sql.Column(sql.Unicode(length=5000), nullable=False)
     first_occurrence = sql.Column(sql.DateTime, nullable=False)
     last_occurrence = sql.Column(sql.DateTime, nullable=False)
     resolved = sql.Column(sql.DateTime)
