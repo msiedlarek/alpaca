@@ -39,9 +39,7 @@ def environment(request):
         raise httpexceptions.HTTPNotFound()
     problems = DBSession.query(
         Problem
-    ).distinct(
-        Problem.id
-    ).join(
+    ).distinct().join(
         Occurrence
     ).filter(
         Occurrence.problem_id == Problem.id,
@@ -134,9 +132,7 @@ def problem(request):
     affected_environments = DBSession.query(
         Environment.id,
         Environment.name
-    ).distinct(
-        Environment.id
-    ).join(
+    ).distinct().join(
         Occurrence
     ).filter(
         Occurrence.problem_id == problem.id
