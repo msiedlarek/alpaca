@@ -7,7 +7,7 @@
         {% assets "base_css" -%}
             <link rel="stylesheet" href="{{ ASSET_URL }}">
         {%- endassets %}
-        <script>document.documentElement.className = document.documentElement.className.replace("no-js","js");</script>
+        <script>(function(H){H.className=H.className.replace(/\bno-js\b/,'js')})(document.documentElement)</script>
     </head>
     <body>
         <div class="top"></div>
