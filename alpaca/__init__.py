@@ -20,7 +20,7 @@ def main(global_config, **settings):
             os.path.abspath(os.path.dirname(__file__)),
             'static'
         ),
-        'webassets.base_url': '/static/',
+        'webassets.base_url': settings.get('route.prefix', '') + '/static/',
         # Jinja2
         'jinja2.i18n.domain': 'alpaca',
     })
