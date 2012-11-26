@@ -1,6 +1,9 @@
-import collections
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 
-ROUTES = collections.OrderedDict((
+ROUTES = OrderedDict((
     # problems
     ('alpaca.problems.dashboard', '/'),
     ('alpaca.problems.environment', '/environment/{environment_name}'),
