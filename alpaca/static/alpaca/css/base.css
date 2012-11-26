@@ -88,3 +88,7 @@ td form {
     margin-bottom: 0;
     display: inline;
 }
+
+.no-js .collapse{
+    height: auto;
+}

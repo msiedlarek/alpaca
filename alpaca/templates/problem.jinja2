@@ -84,7 +84,7 @@
                             <code>{{ frame.function }}()</code> {% trans %}in{% endtrans %} <code>{{ frame.filename }}</code>:<code>{{ frame.line_number }}</code>
                         </a>
                     </div>
-                    <div id="stack-trace-{{ problem.id }}-{{ occurrence.id }}-frame-{{ loop.index }}" class="accordion-body collapse in">
+                    <div id="stack-trace-{{ problem.id }}-{{ occurrence.id }}-frame-{{ loop.index }}" class="accordion-body collapse">
                         <div class="accordion-inner">
                             <pre class="prettyprint"><code>{{ frame.pre_context|join("\n") }}<div class="alpaca-context-line">{{ frame.context }}</div>{{ frame.post_context|join("\n") }}</code></pre>
                             {% if frame.variables %}
@@ -158,7 +158,9 @@
             });
             setTimeout(function(){ALPACA_SAVE_TAGS = true;}, 100);
             $("#occurrence-tags button").hide();
-            $(".alpaca-stack-trace .collapse").collapse();
+            $(".alpaca-stack-trace .collapse").collapse({
+                toggle: false
+            });
             prettyPrint();
         });
     </script>
