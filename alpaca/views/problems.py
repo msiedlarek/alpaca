@@ -45,7 +45,7 @@ def environment(request):
         Occurrence.problem_id == Problem.id,
         Occurrence.environment_id == environment.id
     ).order_by(
-        Problem.last_occurrence
+        sql.desc(Problem.last_occurrence)
     )
     return {
         'environment': {
