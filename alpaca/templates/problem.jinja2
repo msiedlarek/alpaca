@@ -54,7 +54,7 @@
             <li
                 {%- if problem_occurrence.id == occurrence.id %} class="active"{% endif -%}
             >
-                <a href="{{ problem_occurrence.url }}#occurrences">{{ problem_occurrence.id }}</a>
+                <a href="{{ problem_occurrence.url }}#occurrences">{{ problem.occurrence_count - loop.index0 }}</a>
             </li>
         {% endfor %}
     </ul>
