@@ -15,10 +15,11 @@ from alpaca.translation import translate as _
     permission='alpaca.users.sign_in'
 )
 def sign_in(request):
-    destination = request.GET.get(
-        'destination',
-        request.route_url('alpaca.problems.dashboard')
-    )
+    destination = request.GET.get('destination')
+    if destination is None:
+        destination = request.route_url('alpaca.problems.dashboard')
+    else:
+        destination = request.host_url + destination
     sign_in_form = forms.AuthenticationForm(csrf_context=request)
     if request.method == 'POST':
         sign_in_form.process(request.POST)
