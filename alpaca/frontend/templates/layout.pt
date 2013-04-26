@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="generator" content="Alpaca ${layout.alpaca_version}" />
+        <title>Alpaca</title>
+        <link tal:repeat="(media, url) layout.stylesheets" rel="stylesheet" media="${media}" href="${url}" />
+        <link rel="shortcut icon" href="${layout.favicon_path}" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="navbar navbar-fixed-top">
+                <div class="container">
+                    <a href="${layout.dashboard_path}" class="navbar-brand">Alpaca</a>
+                    <ul tal:condition="layout.environments" class="nav">
+                        <li tal:repeat="environment layout.environments" tal:attributes="class 'active' if layout.current_environment_id == environment.id else ''">
+                            <a href="${environment.path}">${environment.name}</a>
+                        </li>
+                    </ul>
+                    <ul class="nav pull-right">
+                        <li tal:condition="layout.configuration_path">
+                            <a i18n:translate="" href="${layout.configuration_path}">Configuration</a>
+                        </li>
+                        <li tal:condition="layout.account_settings_path">
+                            <a i18n:translate="" href="${layout.account_settings_path}">Account</a>
+                        </li>
+                        <li tal:condition="layout.sign_out_form">
+                            ${structure: layout.sign_out_form}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div tal:repeat="message layout.messages" class="alert alert-${message.queue}">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                ${message.content}
+            </div>
+            <metal:content define-slot="content" />
+        </div>
+        <script tal:repeat="url layout.scripts" src="${url}"></script>
+        <metal:content define-slot="scripts" />
+    </body>
+</html>

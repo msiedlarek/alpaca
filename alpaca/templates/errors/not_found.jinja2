@@ -1,8 +1,0 @@
-{% extends "alpaca:templates/base.jinja2" %}
-{% from "alpaca:templates/macros/hero_unit.jinja2" import hero_unit %}
-
-{% block head_title %}{% trans %}Not found{% endtrans %} - {{ super() }}{% endblock %}
-
-{% block body_content %}
-    {{ hero_unit(_("404: Not found"), _("Have an alpaca instead.")) }}
-{% endblock %}

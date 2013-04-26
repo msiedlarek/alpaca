@@ -1,0 +1,9 @@
+Starting frontend:
+
+    pserve configuration/development.ini --server-name=frontend \
+        --app-name=frontend
+
+Starting monitor:
+
+    pserve configuration/development.ini --server-name=monitor \
+        --app-name=monitor

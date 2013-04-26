@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configure xmlns="http://namespaces.zope.org/zope">
+
+    <include package="alpaca.common.domain" />
+    <include package="alpaca.common.persistence" />
+    <include package="alpaca.common.utilities" />
+    <include package="alpaca.common.services" />
+
+</configure>

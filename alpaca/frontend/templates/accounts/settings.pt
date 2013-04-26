@@ -1,0 +1,8 @@
+<metal:main use-macro="main_template">
+    <div tal:omit-tag="" metal:fill-slot="content">
+        <h2 i18n:translate="">Change password</h2>
+        <div class="well form-well">
+            ${structure: change_password_form}
+        </div>
+    </div>
+</metal:main>

@@ -1,0 +1,110 @@
+<metal:main use-macro="main_template">
+    <div tal:omit-tag="" metal:fill-slot="content">
+        <h2 i18n:translate="">Permissions</h2>
+        <form action="${update_permissions_form.action}" method="${update_permissions_form.method}" id="${update_permissions_form.formid}" enctype="multipart/form-data" accept-charset="utf-8">
+            ${structure: update_permissions_form.csrf_token.serialize()}
+            <input type="hidden" name="_charset_" />
+            <input type="hidden" name="__formid__" value="${update_permissions_form.formid}"/>
+            ${update_permissions_form.user_permissions.start_sequence()}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th i18n:translate="">E-mail</th>
+                        <th i18n:translate="">Is administrator</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr tal:define="field update_permissions_form.user_permissions.user_permissions" tal:repeat="cstruct update_permissions_form.user_permissions.cstruct">
+                        <td>
+                            ${field.start_mapping()}
+                            ${structure: field.id.serialize(cstruct.id)}
+                            ${cstruct.email}
+                        </td>
+                        <td>
+                            <span tal:omit-tag="" tal:condition="int(cstruct.id) == authenticated_user_id">
+                                <span tal:omit-tag="" tal:condition="cstruct.is_administrator == 'true'">
+                                    <input type="checkbox" checked="" disabled="disabled" />
+                                </span>
+                                <span tal:omit-tag="" tal:condition="cstruct.is_administrator == 'false'">
+                                    <input type="checkbox" disabled="disabled" />
+                                </span>
+                            </span>
+                            <span tal:omit-tag="" tal:condition="int(cstruct.id) != authenticated_user_id">
+                                ${structure: field.is_administrator.serialize(cstruct.is_administrator)}
+                            </span>
+                            ${field.end_mapping()}
+                        </td>
+                    </tr>
+                    <tr tal:condition="not update_permissions_form.user_permissions.cstruct">
+                        <td i18n:translate="" class="no-data" colspan="2">
+                            There are no defined users. It's kind of interesting how did you get here.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            ${update_permissions_form.user_permissions.end_sequence()}
+            <div tal:condition="update_permissions_form.buttons" class="form-actions">
+                <tal:block repeat="button update_permissions_form.buttons">
+                    <button tal:attributes="disabled button.disabled"
+                            id="${update_permissions_form.formid + button.name}"
+                            name="${button.name}"
+                            type="${button.type}"
+                            class="btn ${repeat.button.start and 'btn-primary' or ''} ${button.css_class}"
+                            value="${button.value}">
+                        <i tal:condition="hasattr(button, 'icon') and button.icon" class="${button.icon}"></i>
+                        ${button.title}
+                    </button>
+                </tal:block>
+            </div>
+        </form>
+        <h2 i18n:translate="">Users</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th i18n:translate="">E-mail</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr tal:repeat="user users">
+                    <td>${user.email}</td>
+                    <td>
+                        ${structure: user.reset_password_form}
+                        <span tal:omit-tag="" tal:condition="user.delete_form">
+                            ${structure: user.delete_form}
+                        </span>
+                    </td>
+                </tr>
+                <tr tal:condition="not users">
+                    <td i18n:translate="" class="no-data" colspan="2">
+                        There are no defined users. It's kind of interesting how did you get here.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="well form-well">
+            ${structure: new_user_form}
+        </div>
+        <h2 i18n:translate="">Environments</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th i18n:translate="">Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr tal:repeat="environment environments">
+                    <td>${environment.name}</td>
+                    <td>${structure: environment.delete_form}</td>
+                </tr>
+                <tr tal:condition="not environments">
+                    <td i18n:translate="" class="no-data" colspan="2">There are no defined environments.</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="well form-well">
+            ${structure: new_environment_form}
+        </div>
+    </div>
+</metal:main>

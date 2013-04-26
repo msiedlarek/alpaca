@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configure xmlns="http://namespaces.zope.org/zope">
+
+    <adapter for="alpaca.common.persistence.interfaces.IPersistenceManager"
+             provides="alpaca.common.services.interfaces.IEnvironmentService"
+             factory="alpaca.common.services.environment_service.EnvironmentService" />
+
+    <adapter for="alpaca.common.persistence.interfaces.IPersistenceManager"
+             provides="alpaca.common.services.interfaces.IProblemService"
+             factory="alpaca.common.services.problem_service.ProblemService" />
+
+    <adapter for="alpaca.common.persistence.interfaces.IPersistenceManager"
+             provides="alpaca.common.services.interfaces.IUserService"
+             factory="alpaca.common.services.user_service.UserService" />
+
+</configure>

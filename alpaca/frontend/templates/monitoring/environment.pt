@@ -1,0 +1,37 @@
+<metal:main use-macro="main_template">
+    <table metal:fill-slot="content" class="table table-striped">
+        <thead>
+            <tr>
+                <th i18n:translate="">ID</th>
+                <th i18n:translate="">Description</th>
+                <th i18n:translate="">Tags</th>
+                <th i18n:translate="">Last occurrence</th>
+                <th i18n:translate="">Occurrences</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr tal:repeat="problem problems">
+                <td>
+                    <a href="${problem.path}">
+                        <span class="badge">#${problem.id}</span>
+                    </a>
+                </td>
+                <td>
+                    <code>${problem.description}</code>
+                </td>
+                <td>
+                    <span tal:repeat="tag problem.tags" class="label">${tag}</span>
+                </td>
+                <td>
+                    ${problem.last_occurrence}
+                </td>
+                <td>
+                    <span class="badge badge-important">${problem.occurrence_count}</span>
+                </td>
+            </tr>
+            <tr tal:condition="not problems">
+                <td class="no-data" colspan="5">No problems yet.</td>
+            </tr>
+        </tbody>
+    </table>
+</metal:main>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:p="http://pylonshq.com/pyramid"
+           xmlns:l="http://pylonshq.com/pyramid_layout">
+
+    <include package="pyramid_zcml" />
+    <include package="pyramid_layout" />
+
+    <include package="alpaca.common" />
+
+    <p:static name="assets"
+              path="alpaca.frontend:assets" />
+
+    <l:layout layout="alpaca.frontend.layout.Layout"
+              template="alpaca.frontend:templates/layout.pt" />
+
+    <l:panel name="alpaca.frontend.big_message"
+             panel="alpaca.frontend.panels.big_message"
+             renderer="alpaca.frontend:templates/panels/big_message.pt" />
+
+    <p:route name="alpaca.frontend.monitoring.dashboard"
+             pattern=""
+             view="alpaca.frontend.monitoring.dashboard"
+             view_renderer="alpaca.frontend:templates/monitoring/dashboard.pt"
+             permission="alpaca.frontend.monitoring.access" />
+
+    <p:route name="alpaca.frontend.monitoring.environment"
+             pattern="environment/{environment_name}"
+             view="alpaca.frontend.monitoring.environment"
+             view_renderer="alpaca.frontend:templates/monitoring/environment.pt"
+             permission="alpaca.frontend.monitoring.access" />
+
+    <p:route name="alpaca.frontend.monitoring.problem_occurrence"
+             pattern="{problem_id:\d+}/{occurrence_id:\d+}"
+             view="alpaca.frontend.monitoring.problem"
+             view_renderer="alpaca.frontend:templates/monitoring/problem.pt"
+             permission="alpaca.frontend.monitoring.access" />
+
+    <p:route name="alpaca.frontend.monitoring.problem"
+             pattern="{problem_id:\d+}"
+             view="alpaca.frontend.monitoring.problem"
+             view_renderer="alpaca.frontend:templates/monitoring/problem.pt"
+             permission="alpaca.frontend.monitoring.access" />
+
+    <p:route name="alpaca.frontend.monitoring.set_tags"
+             pattern="set-tags"
+             request_method="POST"
+             view="alpaca.frontend.monitoring.set_tags"
+             permission="alpaca.frontend.monitoring.access" />
+
+    <p:route name="alpaca.frontend.configuration.configuration"
+             pattern="configuration"
+             view="alpaca.frontend.configuration.ConfigurationView"
+             view_renderer="alpaca.frontend:templates/configuration/configuration.pt"
+             permission="alpaca.frontend.configuration.access" />
+
+    <p:route name="alpaca.frontend.accounts.sign_in"
+             pattern="accounts/sign-in"
+             view="alpaca.frontend.accounts.sign_in"
+             view_renderer="alpaca.frontend:templates/accounts/sign_in.pt"
+             permission="alpaca.frontend.accounts.sign_in" />
+
+    <p:route name="alpaca.frontend.accounts.sign_out"
+             pattern="accounts/sign-out"
+             request_method="POST"
+             view="alpaca.frontend.accounts.sign_out"
+             permission="alpaca.frontend.accounts.sign_out" />
+
+    <p:route name="alpaca.frontend.accounts.settings"
+             pattern="accounts/settings"
+             view="alpaca.frontend.accounts.settings"
+             view_renderer="alpaca.frontend:templates/accounts/settings.pt"
+             permission="alpaca.frontend.accounts.access_settings" />
+
+    <p:view context="pyramid.httpexceptions.HTTPNotFound"
+            view="alpaca.frontend.errors.not_found"
+            renderer="alpaca.frontend:templates/errors/not_found.pt" />
+
+    <p:view context="pyramid.httpexceptions.HTTPForbidden"
+            view="alpaca.frontend.errors.forbidden" />
+
+    <p:view context="Exception"
+            view="alpaca.frontend.errors.internal_server_error"
+            renderer="alpaca.frontend:templates/errors/internal_server_error.pt" />
+
+</configure>

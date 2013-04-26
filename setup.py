@@ -1,57 +1,67 @@
-# -*- coding: utf-8 -*-
-
 import os
-
 from setuptools import setup, find_packages
 
-here = os.path.abspath(os.path.dirname(__file__))
-README = open(os.path.join(here, 'README.txt')).read()
+from alpaca import __version__ as alpaca_version
 
-requires = [
+
+here = os.path.abspath(os.path.dirname(__file__))
+
+
+requirements = [
     'pyramid',
-    'SQLAlchemy',
-    'Jinja2',
-    'webassets',
-    'cssmin',
-    'colander',
-    'simplejson',
-    'py-bcrypt',
-    'WTForms',
-    'pytz',
-    'Babel',
-    'transaction',
+    'pyramid_zcml',
+    'pyramid_layout',
     'pyramid_tm',
-    'pyramid_debugtoolbar',
-    'pyramid_jinja2',
-    'pyramid_webassets',
-    'zope.sqlalchemy',
     'waitress',
+    'zope.component',
+    'zope.interface',
+    'zope.configuration',
+    'zope.sqlalchemy',
+    'sqlalchemy',
+    'psycopg2',
+    'msgpack-python',
+    'pbkdf2',
+    'pyzmq',
+    'tornado',
+    'beaker',
+    'colander',
+    'pytz',
+    'deform',
+    'deform_bootstrap',
 ]
+
 
 setup(
     name='alpaca',
-    version='0.1.0',
+    version=alpaca_version,
     description='Software error aggregator.',
-    long_description=README,
+    long_description='',
     classifiers=[
-        "Programming Language :: Python",
-        "Framework :: Pylons",
-        "Topic :: Internet :: WWW/HTTP",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+        'Programming Language :: Python 3',
+        'Framework :: Pyramid',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
     ],
-    author=u'Mikołaj Siedlarek',
+    author='Mikołaj Siedlarek',
     author_email='m.siedlarek@nctz.net',
     url='https://github.com/msiedlarek/alpaca',
-    keywords='web wsgi bfg pylons pyramid error aggregation',
+    keywords='web alpaca error exception logging monitoring',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    test_suite='alpaca.tests',
-    install_requires=requires,
-    entry_points="""\
-        [paste.app_factory]
-        main = alpaca:main
-        [console_scripts]
-        alpaca_initialize_database = alpaca.scripts.initialize_database:main
-    """,
+    install_requires=requirements,
+    tests_require=requirements,
+    test_suite='alpaca',
+    entry_points={
+        'paste.app_factory': [
+            'frontend = alpaca.frontend:main',
+            'monitor = alpaca.monitor:main',
+        ],
+        'paste.server_runner': [
+            'monitor = alpaca.monitor:server',
+        ],
+        'console_scripts': [
+            'alpaca-admin = alpaca.admin:main',
+        ],
+    }
 )

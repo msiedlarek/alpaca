@@ -1,8 +1,5 @@
 *.egg-info
 *.py[co]
+__pycache__
+.vagrant
 .DS_Store
-.webassets-cache
-alpaca/static/compressed
-*.db
-*.sqlite
-*.sqlite3

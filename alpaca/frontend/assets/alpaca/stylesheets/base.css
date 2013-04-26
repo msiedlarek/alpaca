@@ -1,0 +1,110 @@
+body {
+    padding-top: 60px;
+}
+
+.container {
+    width: 1200px !important;
+}
+
+.navbar .navbar-brand {
+    margin-left: 1px;
+    background: url('../images/alpaca@2x.png') left center no-repeat;
+    background-size: 27px 30px;
+    padding-left: 30px;
+}
+
+.jumbotron.big-message {
+    background-image: url('../images/alpaca_big@2x.png');
+    background-size: 110px 124px;
+    background-position: 60px center;
+    background-repeat: no-repeat;
+    padding-left: 220px;
+    margin-top: 20px;
+}
+
+td.no-data {
+    text-align: center;
+    color: #aaaaaa;
+}
+
+.well.form-well form,
+.well.form-well .form-actions {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+td form,
+.nav form,
+td form .input-append {
+    margin: 0;
+}
+
+.navbar form {
+    margin-top: 12px;
+    padding-left: 15px;
+}
+
+td .form-inline,
+td .form-inline fieldset {
+    display: inline-block;
+}
+
+form input[name='password-confirm'] {
+    margin-top: 10px;
+}
+
+.nav-tabs.occurrences {
+    margin-bottom: 15px;
+}
+
+.nav-tabs.occurrences a {
+    font-size: 9px;
+    padding: 5px 4px 5px 4px;
+}
+
+td pre {
+    margin: 0;
+}
+
+table.alpaca-environment-data,
+table.alpaca-stack-trace-variables {
+    font-size: 12px;
+    font-family: monospace;
+}
+
+.alpaca-stack-trace .accordion-heading a,
+.alpaca-stack-trace .accordion-heading a:hover {
+    color: #000;
+    text-decoration: none;
+    outline: 0;
+}
+
+.alpaca-stack-trace pre .alpaca-context-line {
+    background: #ccc;
+}
+
+.select2-search-choice {
+    font-size: 13px;
+    margin-top: 5px !important;
+}
+
+.select2-choices {
+    padding-top: 4px !important;
+}
+
+input[name='tags'] {
+    min-width: 600px;
+}
+
+.alpaca-detail-table {
+    table-layout: fixed;
+}
+
+.alpaca-detail-table th {
+    width: 20%;
+}
+
+.alpaca-detail-table td,
+.alpaca-detail-table th {
+    overflow-x: scroll;
+}

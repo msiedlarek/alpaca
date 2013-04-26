@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configure xmlns="http://namespaces.zope.org/zope">
+
+    <include package="zope.component" />
+
+    <utility factory="alpaca.common.utilities.random_generator.RandomGenerator"
+             provides="alpaca.common.utilities.interfaces.IRandomGenerator" />
+
+    <utility factory="alpaca.common.utilities.pbkdf2_password_processor.PBKDF2PasswordProcessor"
+             provides="alpaca.common.utilities.interfaces.IPasswordProcessor"
+             name="pbkdf2" />
+
+</configure>

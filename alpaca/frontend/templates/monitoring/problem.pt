@@ -1,0 +1,142 @@
+<metal:main use-macro="main_template">
+    <div tal:omit-tag="" metal:fill-slot="content">
+        <h2 i18n:translate="">Problem #${problem.id}</h2>
+        <table class="table table-bordered alpaca-detail-table">
+            <tbody>
+                <tr>
+                    <th i18n:translate="">Hash:</th>
+                    <td><code>${problem.hash}</code></td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Affected environments:</th>
+                    <td>
+                        <span tal:omit-tag="" tal:repeat="environment problem.affected_environments">
+                            <a href="${environment.path}">${environment.name}</a><span tal:omit-tag="" tal:condition="not repeat.environment.end">,</span>
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">First occurrence:</th>
+                    <td>${problem.first_occurrence}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Last occurrence:</th>
+                    <td>${problem.last_occurrence}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Occurrence count:</th>
+                    <td>${problem.occurrence_count}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Tags:</th>
+                    <td>
+                        <form action="${set_tags_form.action}" method="${set_tags_form.method}" id="${set_tags_form.formid}" enctype="multipart/form-data" accept-charset="utf-8">
+                            <input type="hidden" name="_charset_" />
+                            <input type="hidden" name="__formid__" value="${set_tags_form.formid}"/>
+                            ${structure: set_tags_form.csrf_token.serialize()}
+                            ${structure: set_tags_form.id.serialize()}
+                            <div class="input-append">
+                                ${structure: set_tags_form.tags.serialize()}
+                                <tal:block repeat="button set_tags_form.buttons">
+                                    <button tal:attributes="disabled button.disabled"
+                                            id="${set_tags_form.formid + button.name}"
+                                            name="${button.name}"
+                                            type="${button.type}"
+                                            class="btn ${repeat.button.start and 'btn-primary' or ''} ${button.css_class}"
+                                            value="${button.value}">
+                                        <i tal:condition="hasattr(button, 'icon') and button.icon" class="${button.icon}"></i>
+                                        ${button.title}
+                                    </button>
+                                </tal:block>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h2 tal:condition="problem.occurrence_count <= 1" i18n:translate="" id="occurrences">Occurrence</h2>
+        <h2 tal:condition="problem.occurrence_count > 1" i18n:translate="" id="occurrences">Occurrences</h2>
+        <ul class="nav nav-tabs occurrences">
+            <li tal:repeat="problem_occurrence problem.occurrences" tal:attributes="class 'active' if problem_occurrence.id == occurrence.id else ''">
+                <a href="${problem_occurrence.path}#occurrences">${problem.occurrence_count - repeat.problem_occurrence.index}</a>
+            </li>
+        </ul>
+        <table class="table table-bordered alpaca-detail-table">
+            <tbody>
+                <tr>
+                    <th i18n:translate="">Date:</th>
+                    <td>${occurrence.date}</td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Environment:</th>
+                    <td>
+                        <a href="${occurrence.environment.path}">${occurrence.environment.name}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th i18n:translate="">Message:</th>
+                    <td><pre>${occurrence.message}</pre></td>
+                </tr>
+            </tbody>
+        </table>
+        <div tal:omit-tag="" tal:condition="occurrence.stack_trace">
+            <h3 i18n:translate="">Stack trace</h3>
+            <div id="stack-trace-${problem.id}-${occurrence.id}" class="accordion alpaca-stack-trace">
+                <div tal:repeat="frame occurrence.stack_trace" class="accordion-group">
+                    <div class="accordion-heading">
+                        <a i18n:translate="" class="accordion-toggle" data-toggle="collapse" href="#stack-trace-${problem.id}-${occurrence.id}-frame-${repeat.frame.number}">
+                            <code>${frame.function}()</code> in <code>${frame.filename}</code>:<code>${frame.line_number}</code>
+                        </a>
+                    </div>
+                    <div class="accordion-body collapse" id="stack-trace-${problem.id}-${occurrence.id}-frame-${repeat.frame.number}">
+                        <div class="accordion-inner">
+                            <pre><code>${'\n'.join(frame.pre_context)}<div class="alpaca-context-line">${frame.context}</div>${'\n'.join(frame.post_context)}</code></pre>
+                            <table tal:condition="frame.variables" class="table table-condensed alpaca-detail-table alpaca-stack-trace-variables">
+                                <tbody>
+                                    <tr tal:repeat="(name, value) frame.variables.items()">
+                                        <th>${name}</th>
+                                        <td>${value}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div tal:omit-tag="" tal:repeat="(section, data) occurrence.environment_data.items()">
+            <div tal:omit-tag="" tal:condition="data">
+                <h3>${section}</h3>
+                <table class="table table-bordered table-condensed alpaca-detail-table alpaca-environment-data">
+                    <tbody>
+                        <tr tal:repeat="(name, value) data.items()">
+                            <th>${name}</th>
+                            <td>${value}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script metal:fill-slot="scripts">
+        var field = $("input[name='tags']");
+        var form = field.parents("form");
+        field.select2({
+            tags: [],
+            tokenSeparators: [",", " "],
+            width: "100%",
+            dropdownCss: {display: "none"}
+        });
+        field.on("change", function(event){
+            console.log(event.val);
+            console.log(field.val());
+            $.post(
+                form.attr("action"),
+                form.serialize()
+            );
+        });
+        form.find("button").remove();
+        field.unwrap();
+
+    </script>
+</metal:main>

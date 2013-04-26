@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configure xmlns="http://namespaces.zope.org/zope">
+
+    <include package="zope.component" />
+
+    <utility factory="alpaca.admin.commands.create_user.CreateUserCommand"
+             provides="alpaca.admin.interfaces.ICommand"
+             name="createuser" />
+
+    <utility factory="alpaca.admin.commands.initialize_database.InitializeDatabaseCommand"
+             provides="alpaca.admin.interfaces.ICommand"
+             name="initdb" />
+
+</configure>

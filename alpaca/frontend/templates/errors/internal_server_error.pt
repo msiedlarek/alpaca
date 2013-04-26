@@ -1,0 +1,9 @@
+<metal:main use-macro="main_template">
+    <div tal:omit-tag="" metal:fill-slot="content">
+        ${panel(
+            'alpaca.frontend.big_message',
+            '500 Internal Server Error',
+            alpaca_fact
+        )}
+    </div>
+</metal:main>

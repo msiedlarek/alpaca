@@ -1,0 +1,3 @@
+<metal:main use-macro="main_template">
+    <p metal:fill-slot="content">Hello world!</p>
+</metal:main>

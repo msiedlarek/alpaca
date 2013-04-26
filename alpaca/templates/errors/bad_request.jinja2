@@ -1,8 +1,0 @@
-{% extends "alpaca:templates/base.jinja2" %}
-{% from "alpaca:templates/macros/hero_unit.jinja2" import hero_unit %}
-
-{% block head_title %}{% trans %}Bad Request{% endtrans %} - {{ super() }}{% endblock %}
-
-{% block body_content %}
-    {{ hero_unit(_("400: Bad Request"), _("Something's wrong and it's apparently your fault.")) }}
-{% endblock %}
