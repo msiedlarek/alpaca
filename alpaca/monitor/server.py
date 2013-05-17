@@ -1,8 +1,7 @@
 import logging
 
 import zmq
-from tornado.ioloop import IOLoop
-from zmq.eventloop.ioloop import ZMQPoller
+from zmq.eventloop.ioloop import IOLoop
 from zmq.eventloop.zmqstream import ZMQStream
 
 
@@ -27,8 +26,7 @@ class Server:
         self._socket.subscribe = bytes()
         self._socket.rcvhwm = queued_message_limit * 2  # 2-part messages
 
-        self._zmq_poller = ZMQPoller()
-        self._io_loop = IOLoop(self._zmq_poller)
+        self._io_loop = IOLoop()
 
         self._zmq_stream = ZMQStream(self._socket, io_loop=self._io_loop)
         self._zmq_stream.on_recv(self.application)
