@@ -2,8 +2,7 @@
     <div tal:omit-tag="" metal:fill-slot="content">
         ${panel(
             'alpaca.frontend.big_message',
-            '404 Not Found',
-            alpaca_fact
+            '404 Not Found'
         )}
     </div>
 </metal:main>

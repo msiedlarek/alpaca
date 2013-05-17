@@ -12,6 +12,7 @@
             <div class="navbar navbar-fixed-top">
                 <div class="container">
                     <a href="${layout.dashboard_path}" class="navbar-brand">Alpaca</a>
+                    <metal:content define-slot="alpaca_fact" />
                     <ul tal:condition="layout.environments" class="nav">
                         <li tal:repeat="environment layout.environments" tal:attributes="class 'active' if layout.current_environment_id == environment.id else ''">
                             <a href="${environment.path}">${environment.name}</a>

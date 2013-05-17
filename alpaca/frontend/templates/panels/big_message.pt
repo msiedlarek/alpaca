@@ -1,4 +1,3 @@
 <div class="jumbotron big-message">
     <h1>${header}</h1>
-    <p>${message}</p>
 </div>

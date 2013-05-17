@@ -1,7 +1,6 @@
 import sys
 import logging
 import traceback
-import random
 import urllib
 
 from pyramid import httpexceptions
@@ -11,53 +10,10 @@ from alpaca.frontend.i18n import translate as _
 
 logger = logging.getLogger(__name__)
 
-alpaca_facts = (
-    (
-        "Alpacas were domesticated by the Incas more than 6,000 years ago."
-    ),
-    (
-        "Alpaca fiber is flame-resistant, meeting the Class 1 standard of "
-        "the U.S. Consumer Product Safety Commission."
-    ),
-    (
-        "Alpaca fiber comes in 16 tones that are recognized by the textile "
-        "industry."
-    ),
-    (
-        "Alpacas and llamas can successfully cross-breed."
-    ),
-    (
-        "Because of their predisposition for using a dung pile, some alpacas "
-        "have been successfully house-trained."
-    ),
-    (
-        "Alpacas can live for up to 20 years."
-    ),
-    (
-        "Alpacas are intelligent and easy to train. They quickly learn to "
-        " accept a halter, be led, and load in and out of a vehicle."
-    ),
-    (
-        "Alpacas have three compartment stomachs."
-    ),
-    (
-        "Average alpaca eats 2-3 bales of grass hay per month."
-    ),
-    (
-        "Alpacas will occasionally spit at each other when they are competing "
-        " for food."
-    ),
-    (
-        "Alpacas only have bottom teeth."
-    ),
-)
-
 
 def not_found(exception, request):
     request.response.status = 404
-    return {
-        'alpaca_fact': random.choice(alpaca_facts),
-    }
+    return {}
 
 
 def forbidden(exception, request):
@@ -108,6 +64,4 @@ def internal_server_error(exception, request):
             ''.join(traceback.format_exception(*exception_information))
         )
     request.response.status = 500
-    return {
-        'alpaca_fact': random.choice(alpaca_facts),
-    }
+    return {}

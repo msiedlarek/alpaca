@@ -1,4 +1,6 @@
 import time
+import random
+import os
 
 import colander
 import deform
@@ -62,6 +64,7 @@ def sign_in(request):
             )
     return {
         'authentication_form': authentication_form.render(),
+        'alpaca_fact': _get_random_alpaca_fact(),
     }
 
 
@@ -91,7 +94,7 @@ def settings(request):
         buttons=(
             deform.Button(
                 name='submit-change-password',
-                title=_("Sign in")
+                title=_("Change password")
             ),
         )
     )
@@ -145,3 +148,19 @@ class ChangePasswordSchema(CSRFSecuredSchema):
         title=_("New password"),
         widget=deform.widget.CheckedPasswordWidget()
     )
+
+
+_alpaca_facts_file_name = os.path.join(
+    os.path.dirname(__file__),
+    'resources',
+    'alpaca_facts.txt'
+)
+_alpaca_facts = None
+def _get_random_alpaca_fact():
+    global _alpaca_facts
+    if _alpaca_facts is None:
+        with open(_alpaca_facts_file_name, 'r') as file:
+            _alpaca_facts = tuple((
+                fact.strip() for fact in file.readlines() if fact.strip()
+            ))
+    return random.choice(_alpaca_facts)

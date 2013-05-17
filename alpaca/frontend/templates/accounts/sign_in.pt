@@ -1,4 +1,9 @@
 <metal:main use-macro="main_template">
+    <div tal:omit-tag="" metal:fill-slot="alpaca_fact">
+        <ul class="alpaca-fact nav pull-right">
+            <li>${alpaca_fact}</li>
+        </ul>
+    </div>
     <div tal:omit-tag="" metal:fill-slot="content">
         <h2 i18n:translate="">Sign in</h2>
         <div class="well form-well">

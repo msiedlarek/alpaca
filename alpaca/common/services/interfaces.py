@@ -60,7 +60,7 @@ class IProblemService(interface.Interface):
         results.
         """
 
-    def get_problem_occurrence_ids(problem, limit=None):
+    def get_problem_occurrence_ids(problem):
         """
         Returns iterable of all occurrences of given problem, but only with id
         field, sorted descendingly by the occurrence time. Optionally `limit`

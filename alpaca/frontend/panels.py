@@ -1,5 +1,4 @@
-def big_message(context, request, header, message):
+def big_message(context, request, header):
     return {
         'header': header,
-        'message': message,
     }
