@@ -35,12 +35,15 @@ def includeme(configurator):
 
     settings = configurator.registry.settings
 
+    try:
+        session_timeout = settings.get['session.timeout']
+    except KeyError:
+        session_timeout = None
     configurator.set_session_factory(
-        UnencryptedCookieSessionFactoryConfig(**{
-            key[len('session.'):]: value
-            for key, value in settings.items()
-            if key.startswith('session.')
-        })
+        UnencryptedCookieSessionFactoryConfig(
+            settings['session.secret'],
+            timeout=session_timeout
+        )
     )
     configurator.set_root_factory(RootFactory)
     configurator.set_authorization_policy(ACLAuthorizationPolicy())
