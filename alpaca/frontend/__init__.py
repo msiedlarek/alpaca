@@ -36,7 +36,7 @@ def includeme(configurator):
     settings = configurator.registry.settings
 
     configurator.set_session_factory(
-        UnencryptedCookieSessionFactoryConfig({
+        UnencryptedCookieSessionFactoryConfig(**{
             key[len('session.'):]: value
             for key, value in settings.items()
             if key.startswith('session.')
