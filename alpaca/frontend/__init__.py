@@ -36,7 +36,7 @@ def includeme(configurator):
     settings = configurator.registry.settings
 
     try:
-        session_timeout = settings.get['session.timeout']
+        session_timeout = settings['session.timeout']
     except KeyError:
         session_timeout = None
     configurator.set_session_factory(
