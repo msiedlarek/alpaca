@@ -36,7 +36,11 @@ def includeme(configurator):
     settings = configurator.registry.settings
 
     configurator.set_session_factory(
-        UnencryptedCookieSessionFactoryConfig(settings['session.secret'])
+        UnencryptedCookieSessionFactoryConfig({
+            key[len('session.'):]: value
+            for key, value in settings.items()
+            if key.startswith('session.')
+        })
     )
     configurator.set_root_factory(RootFactory)
     configurator.set_authorization_policy(ACLAuthorizationPolicy())
