@@ -50,5 +50,5 @@ class Occurrence(ModelBase):
     )
     environment = orm.relationship(
         Environment,
-        backref=orm.backref('occurrences')
+        backref=orm.backref('occurrences', cascade='all, delete-orphan')
     )
