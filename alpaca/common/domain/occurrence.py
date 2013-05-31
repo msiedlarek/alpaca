@@ -26,7 +26,7 @@ class Occurrence(ModelBase):
     )
     environment_id = sql.Column(
         sql.BigInteger,
-        sql.ForeignKey('alpaca_environments.id'),
+        sql.ForeignKey('alpaca_environments.id', ondelete='CASCADE'),
         nullable=False
     )
     date = sql.Column(
