@@ -106,7 +106,7 @@ input[name='tags'] {
 
 .alpaca-detail-table td,
 .alpaca-detail-table th {
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 .alpaca-fact {
