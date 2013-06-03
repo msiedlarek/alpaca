@@ -35,14 +35,10 @@ def includeme(configurator):
 
     settings = configurator.registry.settings
 
-    try:
-        session_timeout = int(settings['session.timeout'])
-    except KeyError:
-        session_timeout = None
     configurator.set_session_factory(
         UnencryptedCookieSessionFactoryConfig(
             settings['session.secret'],
-            timeout=session_timeout
+            timeout=int(settings['session.timeout'])
         )
     )
     configurator.set_root_factory(RootFactory)
