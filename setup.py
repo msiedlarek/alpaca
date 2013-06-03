@@ -8,6 +8,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 
 requirements = [
+    'distribute',
     'pyramid',
     'pyramid_zcml',
     'pyramid_layout',

@@ -1,11 +1,11 @@
 import time
 import random
-import os
 
 import colander
 import deform
 import pyramid.security
 from pyramid import httpexceptions
+from pkg_resources import resource_stream
 
 from alpaca.common.utilities.interfaces import IPasswordProcessor
 from alpaca.common.services.interfaces import IUserService
@@ -150,16 +150,11 @@ class ChangePasswordSchema(CSRFSecuredSchema):
     )
 
 
-_alpaca_facts_file_name = os.path.join(
-    os.path.dirname(__file__),
-    'resources',
-    'alpaca_facts.txt'
-)
 _alpaca_facts = None
 def _get_random_alpaca_fact():
     global _alpaca_facts
     if _alpaca_facts is None:
-        with open(_alpaca_facts_file_name, 'r') as file:
+        with resource_stream(__name__, 'resources/alpaca_facts.txt') as file:
             _alpaca_facts = tuple((
                 fact.strip() for fact in file.readlines() if fact.strip()
             ))
