@@ -18,6 +18,15 @@ def dashboard(request):
 
 
 def environment(request):
+    def _truncate_description(description):
+        length = 70
+        ellipsis = '...'
+        if len(description) < length:
+            return description
+        description_words = description[:length].split()
+        if len(description_words) == 1:
+            return description_words[0] + ellipsis
+        return ' '.join(description_words[:-1]) + ellipsis
     environment_service = request.registry.getAdapter(
         request.persistence_manager,
         IEnvironmentService
@@ -40,7 +49,7 @@ def environment(request):
         'problems': [
             {
                 'id': problem.id,
-                'description': problem.description,
+                'description': _truncate_description(problem.description),
                 'last_occurrence': problem.last_occurrence,
                 'tags': problem.tags,
                 'occurrence_count': problem.occurrence_count,
