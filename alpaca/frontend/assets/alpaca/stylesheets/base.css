@@ -13,6 +13,17 @@ body {
     padding-left: 30px;
 }
 
+.alpaca-navigation > li > a {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.alpaca-navigation .glyphicon {
+    display: block;
+    margin-top: 3px;
+    margin-bottom: -3px;
+}
+
 .jumbotron.big-message {
     background-image: url('../images/alpaca_big@2x.png');
     background-size: 110px 124px;

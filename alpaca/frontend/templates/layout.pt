@@ -18,12 +18,12 @@
                             <a href="${environment.path}">${environment.name}</a>
                         </li>
                     </ul>
-                    <ul class="nav pull-right">
+                    <ul class="nav pull-right alpaca-navigation">
                         <li tal:condition="layout.configuration_path">
-                            <a i18n:translate="" href="${layout.configuration_path}">Configuration</a>
+                            <a i18n:attributes="title" href="${layout.configuration_path}" title="Configuration"><span class="glyphicon glyphicon-wrench"></span></a>
                         </li>
                         <li tal:condition="layout.account_settings_path">
-                            <a i18n:translate="" href="${layout.account_settings_path}">Account</a>
+                            <a i18n:attributes="title" href="${layout.account_settings_path}" title="Account"><span class="glyphicon glyphicon-user"></span></a>
                         </li>
                         <li tal:condition="layout.sign_out_form">
                             ${structure: layout.sign_out_form}
