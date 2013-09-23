@@ -79,13 +79,18 @@ class ProblemService:
 
     def get_environment_problems(self, environment, limit=None):
         query = self._persistence_manager.session.query(
-            Problem
-        ).distinct().join(
+            Problem,
+            sql.func.max(Occurrence.date).label('last_occurrence_date')
+        ).select_from(
             Occurrence
+        ).join(
+            Problem
         ).filter(
             Occurrence.environment == environment
+        ).group_by(
+            Problem.id
         ).order_by(
-            sql.desc(Problem.last_occurrence)
+            sql.desc('last_occurrence_date')
         )
         if limit is not None:
             query = query.limit(limit)

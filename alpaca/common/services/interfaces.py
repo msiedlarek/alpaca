@@ -55,9 +55,9 @@ class IProblemService(interface.Interface):
 
     def get_environment_problems(environment, limit=None):
         """
-        Get all the problems that occurred in given `environment`, sorted by
-        the last occurrence date descendingly. Optionally `limit` the number of
-        results.
+        Returns a tuple of all the problems that occurred in given
+        `environment` and dates of last occurrence in that environment.
+        Optionally `limit` the number of results.
         """
 
     def get_problem_occurrence_ids(problem):

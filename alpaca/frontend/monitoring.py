@@ -50,7 +50,7 @@ def environment(request):
             {
                 'id': problem.id,
                 'description': _truncate_description(problem.description),
-                'last_occurrence': problem.last_occurrence,
+                'last_occurrence': last_occurrence_date,
                 'tags': problem.tags,
                 'occurrence_count': problem.occurrence_count,
                 'path': request.route_path(
@@ -58,7 +58,7 @@ def environment(request):
                     problem_id=problem.id
                 ),
             }
-            for problem in problems
+            for problem, last_occurrence_date in problems
         ],
     }
 
