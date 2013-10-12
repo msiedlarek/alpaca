@@ -11,6 +11,9 @@
     <p:static name="assets"
               path="alpaca.frontend:assets" />
 
+    <p:subscriber for="pyramid.events.BeforeRender"
+                  handler="alpaca.frontend.renderer_globals.handler" />
+
     <l:layout layout="alpaca.frontend.layout.Layout"
               template="alpaca.frontend:templates/layout.pt" />
 

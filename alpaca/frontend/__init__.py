@@ -79,3 +79,9 @@ def includeme(configurator):
         property=True,
         reify=True
     )
+    configurator.add_request_method(
+        requests.get_timezone,
+        name='timezone',
+        property=True,
+        reify=True
+    )

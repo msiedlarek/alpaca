@@ -23,7 +23,7 @@
                     <span tal:repeat="tag problem.tags" class="label">${tag}</span>
                 </td>
                 <td>
-                    <time datetime="${problem.last_occurrence.isoformat()}" class="timeago">${problem.last_occurrence}</time>
+                    <time datetime="${problem.last_occurrence.isoformat()}" class="timeago">${local_time(problem.last_occurrence)}</time>
                 </td>
                 <td>
                     <span class="badge badge-important">${problem.occurrence_count}</span>

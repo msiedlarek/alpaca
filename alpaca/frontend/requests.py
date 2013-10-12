@@ -1,4 +1,5 @@
 from pyramid import security
+import pytz
 
 from alpaca.common.persistence.interfaces import IPersistenceManager
 from alpaca.common.services.interfaces import IUserService
@@ -18,3 +19,6 @@ def get_user(request):
         return user_service.get_user(authenticated_user_id)
     else:
         return None
+
+def get_timezone(request):
+    return pytz.timezone(request.registry.settings['alpaca.timezone'])

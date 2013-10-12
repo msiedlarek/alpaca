@@ -17,11 +17,11 @@
                 </tr>
                 <tr>
                     <th i18n:translate="">First occurrence:</th>
-                    <td>${problem.first_occurrence}</td>
+                    <td>${local_time(problem.first_occurrence)}</td>
                 </tr>
                 <tr>
                     <th i18n:translate="">Last occurrence:</th>
-                    <td>${problem.last_occurrence}</td>
+                    <td>${local_time(problem.last_occurrence)}</td>
                 </tr>
                 <tr>
                     <th i18n:translate="">Occurrence count:</th>
@@ -65,7 +65,7 @@
             <tbody>
                 <tr>
                     <th i18n:translate="">Date:</th>
-                    <td>${occurrence.date}</td>
+                    <td>${local_time(occurrence.date)}</td>
                 </tr>
                 <tr>
                     <th i18n:translate="">Environment:</th>
