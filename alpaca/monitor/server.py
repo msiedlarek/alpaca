@@ -18,6 +18,10 @@ class Server:
         self.application = application
 
         self._context = zmq.Context()
+        self._context.set(
+            zmq.MAX_SOCKETS,
+            int(settings.get('alpaca.connection_limit', 10000))
+        )
 
         queued_message_limit = int(
             settings.get('alpaca.queued_message_limit', 1000)
