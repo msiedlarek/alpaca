@@ -24,6 +24,8 @@ def authentication_callback(user_id, request):
         IUserService
     )
     user = user_service.get_user(user_id)
+    if user is None:
+        return None
     if user.is_administrator:
         return (User, Administrator,)
     return (User,)
