@@ -49,10 +49,6 @@ class ILayout(interface.Interface):
         """
     )
 
-    user = interface.Attribute(
-        """Currently signed-in user or None."""
-    )
-
     environments = interface.Attribute(
         """
         List of dictionaries (`id`, `name` and `path`) of available

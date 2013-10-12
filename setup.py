@@ -51,7 +51,9 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=requirements,
-    tests_require=requirements,
+    tests_require=requirements + [
+        'mock==1.0.1',
+    ],
     test_suite='alpaca',
     entry_points={
         'paste.app_factory': [

@@ -17,3 +17,10 @@ Development
 $ vagrant up
 $ vagrant ssh
 $ alpaca-admin /vagrant/configuration/development.ini createuser -a user@example.com
+
+Testing
+-------
+
+$ vagrant up
+$ vagrant ssh
+$ python setup.py test
