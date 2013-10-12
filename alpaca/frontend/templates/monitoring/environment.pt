@@ -23,7 +23,7 @@
                     <span tal:repeat="tag problem.tags" class="label">${tag}</span>
                 </td>
                 <td>
-                    ${problem.last_occurrence}
+                    <time datetime="${problem.last_occurrence.isoformat()}Z" class="timeago">${problem.last_occurrence}</time>
                 </td>
                 <td>
                     <span class="badge badge-important">${problem.occurrence_count}</span>
@@ -34,4 +34,9 @@
             </tr>
         </tbody>
     </table>
+    <script metal:fill-slot="scripts">
+        $(function(){
+            $('time.timeago').timeago();
+        });
+    </script>
 </metal:main>

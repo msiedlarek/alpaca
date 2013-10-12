@@ -14,7 +14,26 @@ from alpaca.common.services.interfaces import (
 
 
 def dashboard(request):
-    return {}
+    environment_service = request.registry.getAdapter(
+        request.persistence_manager,
+        IEnvironmentService
+    )
+    environments = (
+        environment_service.get_environments_with_last_occurrence_date()
+    )
+    return {
+        'environments': [
+            {
+                'name': environment.name,
+                'path': request.route_path(
+                    'alpaca.frontend.monitoring.environment',
+                    environment_name=environment.name
+                ),
+                'last_occurrence': last_occurrence_date,
+            }
+            for environment, last_occurrence_date in environments
+        ],
+    }
 
 
 def environment(request):

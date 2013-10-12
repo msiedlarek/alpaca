@@ -1,3 +1,16 @@
 <metal:main use-macro="main_template">
-    <p metal:fill-slot="content">Hello world!</p>
+    <div metal:fill-slot="content">
+        <h2 i18n:translate="">Last known problems</h2>
+        <ul class="list-group">
+            <a href="${environment.path}" tal:repeat="environment environments" class="list-group-item">
+                <time datetime="${environment.last_occurrence.isoformat()}Z" class="badge timeago">${environment.last_occurrence}</time>
+                ${environment.name}
+            </a>
+        </ul>
+    </div>
+    <script metal:fill-slot="scripts">
+        $(function(){
+            $('time.timeago').timeago();
+        });
+    </script>
 </metal:main>

@@ -2,6 +2,7 @@ from zope import (
     interface,
     component,
 )
+import sqlalchemy as sql
 from sqlalchemy.orm import exc as db_exc
 
 from alpaca.common.persistence.interfaces import IPersistenceManager
@@ -60,4 +61,18 @@ class EnvironmentService:
             Occurrence.problem == problem
         ).order_by(
             Environment.name
+        )
+
+    def get_environments_with_last_occurrence_date(self):
+        return self._persistence_manager.session.query(
+            Environment,
+            sql.func.max(Occurrence.date).label('last_occurrence_date')
+        ).select_from(
+            Occurrence
+        ).join(
+            Environment
+        ).group_by(
+            Environment.id
+        ).order_by(
+            sql.desc('last_occurrence_date')
         )

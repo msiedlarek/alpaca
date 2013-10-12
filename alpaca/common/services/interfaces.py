@@ -24,6 +24,12 @@ class IEnvironmentService(interface.Interface):
         Returns all environments affected by given problem, sorted by name.
         """
 
+    def get_environments_with_last_occurrence_date():
+        """
+        Returns a tuple of all environment and the dates of latest problem
+        occurrences in those environments, sorted by those dates descendingly.
+        """
+
 
 class IProblemService(interface.Interface):
     """Service providing problem handling logic."""
