@@ -8,6 +8,7 @@ from alpaca.common.persistence.types.serialized_list import (
 from alpaca.common.persistence.types.serialized_dictionary import (
     SerializedDictionary
 )
+from alpaca.common.persistence.types.utc_datetime import UTCDateTime
 from alpaca.common.domain.interfaces import IOccurrence
 from alpaca.common.domain.model_base import ModelBase
 from alpaca.common.domain.problem import Problem
@@ -30,7 +31,7 @@ class Occurrence(ModelBase):
         nullable=False
     )
     date = sql.Column(
-        sql.DateTime,
+        UTCDateTime,
         nullable=False
     )
     message = sql.Column(

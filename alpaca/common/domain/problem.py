@@ -3,6 +3,7 @@ import sqlalchemy as sql
 
 from alpaca.common.domain.interfaces import IProblem
 from alpaca.common.domain.model_base import ModelBase
+from alpaca.common.persistence.types.utc_datetime import UTCDateTime
 from alpaca.common.persistence.types.serialized_list import SerializedList
 
 
@@ -22,15 +23,15 @@ class Problem(ModelBase):
         nullable=False
     )
     first_occurrence = sql.Column(
-        sql.DateTime,
+        UTCDateTime,
         nullable=False
     )
     last_occurrence = sql.Column(
-        sql.DateTime,
+        UTCDateTime,
         nullable=False
     )
     resolved = sql.Column(
-        sql.DateTime
+        UTCDateTime
     )
     occurrence_count = sql.Column(
         sql.BigInteger,

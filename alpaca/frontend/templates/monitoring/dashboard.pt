@@ -3,7 +3,7 @@
         <h2 i18n:translate="">Last known problems</h2>
         <ul class="list-group">
             <a href="${environment.path}" tal:repeat="environment environments" class="list-group-item">
-                <time datetime="${environment.last_occurrence.isoformat()}Z" class="badge timeago">${environment.last_occurrence}</time>
+                <time datetime="${environment.last_occurrence.isoformat()}" class="badge timeago">${environment.last_occurrence}</time>
                 ${environment.name}
             </a>
         </ul>
