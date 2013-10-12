@@ -156,8 +156,29 @@ class supervisor(
   }
 
   if ! defined(Package[$supervisor::params::package]) {
+    if ! defined(Package['python-pip']) {
+      package { 'python-pip':
+        ensure => present,
+      }
+    }
+    file { '/etc/default/supervisor':
+      ensure => file,
+      source => 'puppet:///modules/supervisor/etc/default/supervisor',
+    }
+    file { '/etc/init.d/supervisor':
+      ensure  => file,
+      source  => 'puppet:///modules/supervisor/etc/init.d/supervisor',
+      require => [
+        File['/etc/default/supervisor'],
+      ],
+    }
     package { $supervisor::params::package:
-      ensure => $package_ensure,
+      ensure   => $package_ensure,
+      provider => 'pip',
+      require  => [
+        File['/etc/init.d/supervisor'],
+        Package['python-pip'],
+      ]
     }
   }
 
@@ -194,7 +215,7 @@ class supervisor(
   service { $supervisor::params::system_service:
     ensure     => $service_ensure_real,
     enable     => $service_enable,
-    hasrestart => true,
+    hasrestart => false,
     require    => File[$supervisor::params::conf_file],
   }
 }

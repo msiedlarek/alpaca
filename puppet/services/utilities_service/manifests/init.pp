@@ -1,15 +1,20 @@
 class utilities_service {
 
-  $utility_packages = [
-    "bash-completion",
-    "curl",
-    "netcat",
-    "htop",
-    "vim",
-    "git",
+  $packages = [
+    'ack-grep',
+    'htop',
+    'netcat',
+    'telnet',
+    'bash-completion',
+    'vim-nox',
+    'screen',
+    'curl',
+    'tree',
+    'xz-utils',
+    'bzip2',
   ]
 
-  package { $utility_packages:
+  package { $packages:
     ensure => present,
   }
 
