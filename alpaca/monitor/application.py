@@ -102,9 +102,6 @@ class Application:
                 )
             )
             return
-        report['date'] = pytz.utc.normalize(
-            report['date'].astimezone(pytz.utc)
-        )
         description = report['message'].split('\n')[0].strip()
         problem = Problem(
             hash=report['hash'],
