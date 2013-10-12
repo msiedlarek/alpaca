@@ -23,6 +23,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.hostname = "dev-alpaca"
+  config.vm.network :private_network, ip: "192.168.60.2"
   config.vm.network :forwarded_port, guest: 8195, host: 8195
   config.vm.network :forwarded_port, guest: 80, host: 8080
 
