@@ -24,7 +24,7 @@ class Layout:
         'alpaca/scripts/jquery-1.9.1.min.js',
         'bootstrap/js/bootstrap.min.js',
         'select2/select2.min.js',
-        'timeago/jquery.timeago.js',
+        'timeago/jquery.timeago.min.js',
     )
 
     def __init__(self, context, request):
