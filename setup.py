@@ -1,10 +1,18 @@
+# -*- coding: utf-8 -*-
+
 import os
+import codecs
 from setuptools import setup, find_packages
 
 from alpaca import __version__ as alpaca_version
 
 
 here = os.path.abspath(os.path.dirname(__file__))
+
+
+readme_path = os.path.join(here, 'README.txt')
+with codecs.open(readme_path, 'r', encoding='utf-8') as file:
+    readme = file.read()
 
 
 requirements = [
@@ -36,7 +44,7 @@ setup(
     name='alpaca',
     version=alpaca_version,
     description='Software error aggregator.',
-    long_description=open(os.path.join(here, 'README.txt')).read(),
+    long_description=readme,
     classifiers=[
         'Programming Language :: Python 3',
         'Environment :: Web Environment',
