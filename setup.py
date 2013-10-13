@@ -39,7 +39,6 @@ requirements = [
     'deform_bootstrap==0.2.9',
 ]
 
-
 setup(
     name='alpaca-monitor',
     version=alpaca_version,
