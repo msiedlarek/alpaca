@@ -41,7 +41,7 @@ requirements = [
 
 
 setup(
-    name='alpaca',
+    name='alpaca-monitor',
     version=alpaca_version,
     description='Software error aggregator.',
     long_description=readme,
