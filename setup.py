@@ -46,7 +46,8 @@ setup(
     description='Software error aggregator.',
     long_description=readme,
     classifiers=[
-        'Programming Language :: Python 3',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
         'Environment :: Web Environment',
         'Framework :: Pyramid',
         'Topic :: Internet :: WWW/HTTP',
