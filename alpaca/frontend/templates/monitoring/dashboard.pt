@@ -1,11 +1,19 @@
 <metal:main use-macro="main_template">
     <div metal:fill-slot="content">
-        <h2 i18n:translate="">Last known problems</h2>
-        <div class="list-group">
-            <a href="${environment.path}" tal:repeat="environment environments" class="list-group-item">
-                <time datetime="${environment.last_occurrence.isoformat()}" class="badge timeago">${local_time(environment.last_occurrence)}</time>
-                ${environment.name}
-            </a>
+        <div tal:omit-tag="" tal:condition="not environments">
+            ${panel(
+                'alpaca.frontend.big_message',
+                'Welcome to Alpaca!'
+            )}
+        </div>
+        <div tal:omit-tag="" tal:condition="environments">
+            <h2 i18n:translate="">Last known problems</h2>
+            <div class="list-group">
+                <a href="${environment.path}" tal:repeat="environment environments" class="list-group-item">
+                    <time datetime="${environment.last_occurrence.isoformat()}" class="badge timeago">${local_time(environment.last_occurrence)}</time>
+                    ${environment.name}
+                </a>
+            </div>
         </div>
     </div>
     <script metal:fill-slot="scripts">
