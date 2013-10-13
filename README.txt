@@ -7,6 +7,11 @@ publish detected problems to a central monitoring server using flexible
 API. Monitoring server (monitor) shares its database with a web
 application (frontend), allowing detailed inspection of each problem.
 
+Installing
+----------
+
+    pip install alpaca-monitor
+
 Running
 -------
 
